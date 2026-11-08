@@ -1,0 +1,828 @@
+<title>KJST Portal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="รวมลิงก์ระบบสารสนเทศ โรงเรียนกาญจนาภิเษกวิทยาลัย สุราษฎร์ธานี พร้อมตารางสอนครูประจำสัปดาห์">
+<link rel="icon" href="__LOGO__">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap">
+<style>
+/* Layout: masthead (3 selectable variants) → "today" strip → 8 illustrated daily tiles → work-group link panels → weekly teaching timetable */
+:root{
+  --navy:#1E3A8A; --navy-deep:#14275E; --blue:#2563EB; --gold:#F59E0B; --gold-soft:#FEF3C7;
+  --ok:#059669; --ok-soft:#D1FAE5; --urgent:#DC2626; --urgent-soft:#FEE2E2;
+  --bg:#F3F5FB; --surface:#FFFFFF; --surface-2:#EEF2FB; --ink:#16203A; --muted:#5B6683; --line:#DCE2F0;
+  --blob:#E3EAFB; --paper:#FFFFFF; --cell-own:#E8EEFD; --cell-meet:#FFF6E0;
+  --band-ink:#F4F6FD; --band-muted:#B9C5EA;
+  --f-display:"Prompt","Sarabun",system-ui,sans-serif;
+  --f-body:"Sarabun","Prompt",system-ui,sans-serif;
+  --btn:#1E3A8A; --btn-hover:#2563EB; --r:14px; --r-sm:9px;
+  --shadow:0 1px 2px rgba(20,39,94,.06),0 6px 18px -8px rgba(20,39,94,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --navy:#93B0FF; --navy-deep:#0C1638; --blue:#7FA3FF; --gold:#FBBF24; --gold-soft:#3A2C0B;
+  --ok:#34D399; --ok-soft:#0D2E25; --urgent:#F87171; --urgent-soft:#3A1515;
+  --bg:#0A1022; --surface:#111A33; --surface-2:#16213F; --ink:#E6EBF8; --muted:#9AA6C6; --line:#24304F;
+  --blob:#1B2850; --paper:#22305A; --cell-own:#1A2852; --cell-meet:#2E2610;
+  --band-ink:#F4F6FD; --band-muted:#AFBBE0; --btn:#2563EB; --btn-hover:#3B74F0; color-scheme:dark;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px -10px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --navy:#93B0FF; --navy-deep:#0C1638; --blue:#7FA3FF; --gold:#FBBF24; --gold-soft:#3A2C0B;
+  --ok:#34D399; --ok-soft:#0D2E25; --urgent:#F87171; --urgent-soft:#3A1515;
+  --bg:#0A1022; --surface:#111A33; --surface-2:#16213F; --ink:#E6EBF8; --muted:#9AA6C6; --line:#24304F;
+  --blob:#1B2850; --paper:#22305A; --cell-own:#1A2852; --cell-meet:#2E2610;
+  --band-ink:#F4F6FD; --band-muted:#AFBBE0; --btn:#2563EB; --btn-hover:#3B74F0; color-scheme:dark;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px -10px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.3}
+
+/* ---------- masthead ---------- */
+/* ---------- masthead: 3 variants (data-hd on <body>) ---------- */
+.hd{position:relative}
+.hd .wrap{position:relative;display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:18px;align-items:center;min-width:0}
+.brand img{width:64px;height:auto;flex:none}
+.brand .eyebrow{font-family:var(--f-display);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+.brand h1{font-size:clamp(1.2rem,2.4vw,1.8rem);font-weight:600}
+.brand p{margin:2px 0 0;font-size:.95rem}
+.today{display:flex;gap:10px;flex-wrap:wrap}
+.today .pill{border-radius:12px;padding:10px 14px;min-width:0}
+.today .k{font-size:.75rem;letter-spacing:.04em}
+.today .v{font-family:var(--f-display);font-weight:500;font-size:1rem;font-variant-numeric:tabular-nums}
+.prog{height:5px;border-radius:9px;margin-top:6px;overflow:hidden}
+.prog i{display:block;height:100%;background:#FBBF24;border-radius:9px}
+.hd-util{display:none}
+
+/* A · แถบกรมท่า เส้นทอง */
+[data-hd="a"] .hd{background-color:#14275E;color:#fff;border-bottom:4px solid #F59E0B;
+  background-image:linear-gradient(180deg,rgba(30,58,138,.55),rgba(20,39,94,.9) 90%),
+   repeating-linear-gradient(45deg,rgba(245,158,11,.10) 0 1px,transparent 1px 22px),
+   repeating-linear-gradient(-45deg,rgba(245,158,11,.10) 0 1px,transparent 1px 22px)}
+.brand h1{white-space:nowrap}
+@media (max-width:560px){.brand h1{white-space:normal;font-size:1.2rem}}
+[data-hd="a"] .hd .wrap{padding-block:26px 64px}
+[data-hd="a"] .brand img{filter:drop-shadow(0 3px 8px rgba(0,0,0,.35))}
+[data-hd="a"] .brand .eyebrow{color:#FCD34D}
+[data-hd="a"] .brand h1{color:#fff}
+[data-hd="a"] .brand p{color:#C3CDEB}
+[data-hd="a"] .today .pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+[data-hd="a"] .today .k{color:#C3CDEB}
+[data-hd="a"] .today .v{color:#fff}
+[data-hd="a"] .prog{background:rgba(255,255,255,.15)}
+
+/* B · พื้นสว่าง แถบข้อมูลด้านบน */
+[data-hd="b"] .hd{background:var(--surface);border-bottom:1px solid var(--line)}
+[data-hd="b"] .hd-util{display:block;background:var(--btn);color:#fff;font-size:.85rem}
+[data-hd="b"] .hd-util .wrap{padding-block:7px;gap:8px 18px;justify-content:flex-start}
+[data-hd="b"] .hd-util span{display:inline-flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+[data-hd="b"] .hd-util b{color:#FCD34D;font-weight:500;font-family:var(--f-display)}
+[data-hd="b"] .hd-main{padding-block:22px}
+[data-hd="b"] .brand .eyebrow{color:var(--gold)}
+[data-hd="b"] .brand h1{color:var(--navy)}
+[data-hd="b"] .brand p{color:var(--muted)}
+[data-hd="b"] .today .pill{background:var(--surface-2);border:1px solid var(--line)}
+[data-hd="b"] .today .k{color:var(--muted)}
+[data-hd="b"] .today .v{color:var(--ink)}
+[data-hd="b"] .prog{background:var(--line)}
+[data-hd="b"] .today .pill.p-date{display:none}
+[data-hd="b"] .search{margin-top:20px}
+
+/* C · ป้ายกึ่งกลาง ลายเรขาคณิต */
+[data-hd="c"] .hd{background-color:#14275E;color:#fff;
+  background-image:linear-gradient(180deg,rgba(20,39,94,.0),rgba(20,39,94,.85) 85%),
+   repeating-linear-gradient(45deg,rgba(245,158,11,.10) 0 1px,transparent 1px 22px),
+   repeating-linear-gradient(-45deg,rgba(245,158,11,.10) 0 1px,transparent 1px 22px)}
+[data-hd="c"] .hd .wrap{flex-direction:column;justify-content:center;text-align:center;padding-block:30px 66px;gap:18px}
+[data-hd="c"] .brand{flex-direction:column;gap:12px}
+[data-hd="c"] .brand img{width:84px;padding:10px;border-radius:50%;background:rgba(255,255,255,.06);box-shadow:0 0 0 2px #F59E0B,0 0 0 8px rgba(245,158,11,.15)}
+[data-hd="c"] .brand .eyebrow{color:#FCD34D}
+[data-hd="c"] .brand h1{color:#fff;font-size:clamp(1.45rem,3vw,2.2rem)}
+[data-hd="c"] .brand p{color:#C3CDEB}
+[data-hd="c"] .today{justify-content:center}
+[data-hd="c"] .today .pill{background:rgba(255,255,255,.07);border:1px solid rgba(245,158,11,.35);text-align:left}
+[data-hd="c"] .today .k{color:#C3CDEB}
+[data-hd="c"] .today .v{color:#fff}
+[data-hd="c"] .prog{background:rgba(255,255,255,.15)}
+
+/* preview-only switcher */
+.hd-switch{position:fixed;z-index:20;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px}
+.hd-switch span{font-family:var(--f-display);font-size:.8rem;color:var(--muted);padding:0 8px}
+.hd-switch button{font:inherit;font-family:var(--f-display);font-size:.85rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:6px 10px;cursor:pointer}
+.hd-switch button[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:#fff}
+
+/* ---------- search ---------- */
+.search{margin-top:-30px;position:relative;z-index:2}
+.search .box{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:6px 8px 6px 16px}
+.search svg{flex:none;color:var(--muted)}
+.search input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:1.02rem;color:var(--ink);padding:10px 0}
+.search input:focus{outline:none}
+.search .box:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 25%,transparent),var(--shadow)}
+.kbd{font-family:var(--f-display);font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 7px;white-space:nowrap}
+
+main{display:grid;grid-template-columns:minmax(0,1fr);gap:44px;padding-block:34px 56px}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sec-head h2{font-size:1.35rem;font-weight:600}
+.sec-head p{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+.sec-head .tag{font-family:var(--f-display);font-size:.78rem;font-weight:500;color:var(--navy);background:var(--surface-2);border-radius:99px;padding:3px 10px}
+
+/* ---------- daily tiles ---------- */
+.daily{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.tile{display:flex;flex-direction:column;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--blue) 45%,var(--line))}
+.tile .art{aspect-ratio:16/10;max-width:100%;background:var(--surface-2);display:grid;place-items:center;border-bottom:1px solid var(--line)}
+.tile .art svg{width:82%;height:auto}
+.tile .body{padding:14px 16px 16px;display:grid;gap:4px;flex:1}
+.tile h3{font-size:1.04rem;font-weight:600;color:var(--ink)}
+.tile p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
+.tile .foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.go{font-family:var(--f-display);font-size:.85rem;font-weight:500;color:var(--blue);display:inline-flex;gap:6px;align-items:center}
+.tile:hover .go svg{transform:translateX(3px)}
+.go svg{transition:transform .18s}
+.chip{font-family:var(--f-display);font-size:.72rem;font-weight:500;color:var(--muted);background:var(--surface-2);border-radius:6px;padding:2px 8px;white-space:nowrap}
+
+/* illustration palette */
+.il-blob{fill:var(--blob)} .il-navy{fill:var(--navy)} .il-blue{fill:var(--blue)} .il-gold{fill:var(--gold)}
+.il-paper{fill:var(--paper)} .il-line{fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.il-soft{fill:var(--line)} .il-ok{fill:var(--ok)} .il-red{fill:var(--urgent)}
+.il-gl{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.il-wl{fill:none;stroke:var(--paper);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- groups ---------- */
+.groups{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.group{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0;transition:border-color .18s,box-shadow .18s}
+.group[open]{box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--blue) 35%,var(--line))}
+.group summary{list-style:none;display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-radius:var(--r);user-select:none}
+.group summary::-webkit-details-marker{display:none}
+.group summary:hover{background:var(--surface-2)}
+.group[open] summary{border-bottom:1px solid var(--line);border-radius:var(--r) var(--r) 0 0}
+.gicon{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--surface-2);color:var(--navy)}
+.group summary:hover .gicon{background:var(--surface)}
+.gicon svg{width:22px;height:22px}
+.group .gt{flex:1;min-width:0}
+.group h3{font-size:1rem;font-weight:600}
+.group .gt small{display:block;color:var(--muted);font-size:.82rem;line-height:1.4}
+.gcount{font-family:var(--f-display);font-size:.78rem;font-weight:600;color:var(--navy);background:var(--surface-2);border-radius:99px;padding:2px 9px;font-variant-numeric:tabular-nums;flex:none}
+.chev{width:20px;height:20px;flex:none;color:var(--muted);transition:transform .2s}
+.group[open] .chev{transform:rotate(180deg)}
+.group .links{padding:8px 10px 12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));column-gap:8px}
+.group .subhead{grid-column:1/-1}
+.g-tools{display:flex;gap:6px}
+.links{list-style:none;margin:0;padding:0;display:grid}
+.links a{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:9px;text-decoration:none;min-width:0}
+.links a:hover{background:var(--surface-2)}
+.links .ki{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:none;color:var(--navy);background:color-mix(in srgb,var(--blue) 10%,transparent)}
+.links .ki svg{width:16px;height:16px}
+.links .ki.k-sheet{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.links .ki.k-pdf,.links .ki.k-clip{color:var(--urgent);background:color-mix(in srgb,var(--urgent) 11%,transparent)}
+.links .ki.k-form{color:#9333EA;background:color-mix(in srgb,#9333EA 12%,transparent)}
+.links .ki.k-folder,.links .ki.k-doc{color:var(--gold);background:color-mix(in srgb,var(--gold) 15%,transparent)}
+.links .t{flex:1;min-width:0;font-size:.95rem;line-height:1.35}
+.links .chip{flex:none}
+.subhead{font-family:var(--f-display);font-size:.74rem;letter-spacing:.06em;color:var(--muted);padding:10px 6px 2px;text-transform:uppercase}
+.empty{color:var(--muted);text-align:center;padding:24px;border:1px dashed var(--line);border-radius:var(--r)}
+
+/* ---------- calendar strip ---------- */
+.cal{display:grid;grid-template-columns:1.1fr 2fr;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.bigday{display:flex;align-items:baseline;gap:8px;font-family:var(--f-display)}
+.bigday b{font-size:2.6rem;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
+.bigday span{color:var(--muted)}
+.bar{height:10px;border-radius:9px;background:var(--surface-2);overflow:hidden;margin:12px 0 8px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--navy),var(--blue));border-radius:9px}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.hols{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.hols li{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:11px;min-width:0}
+.hols li.past{opacity:.5}
+.hols li.next{border-color:var(--gold);background:var(--gold-soft)}
+.dbox{width:46px;flex:none;text-align:center;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:var(--surface);font-family:var(--f-display)}
+.dbox i{display:block;font-style:normal;font-size:.66rem;background:var(--navy);color:var(--surface);padding:1px 0}
+.dbox b{display:block;font-size:1.15rem;line-height:1.5;font-variant-numeric:tabular-nums}
+.hols .n{font-size:.88rem;line-height:1.35}
+.hols small{display:block;color:var(--muted);font-size:.78rem}
+
+/* ---------- timetable ---------- */
+.tt-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin-bottom:12px}
+.who{flex:1 1 380px;min-width:0;display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 10px;flex-wrap:wrap}
+.ava{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--f-display);font-weight:600;background:var(--btn);color:#fff;font-size:1rem}
+.who .nm{flex:1;min-width:150px;line-height:1.3}
+.who .nm b{display:block;font-family:var(--f-display);font-weight:600;font-size:1rem}
+.who .nm small{color:var(--muted);font-size:.82rem}
+.pinbadge{font-family:var(--f-display);font-size:.72rem;font-weight:600;color:#92400E;background:var(--gold-soft);border-radius:99px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+:root[data-theme="dark"] .pinbadge{color:#FCD34D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pinbadge{color:#FCD34D}}
+.who .acts{display:flex;gap:4px;flex-wrap:wrap}
+.btn.line{border:1px solid var(--line)}
+.recents{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:-2px 0 12px;font-size:.82rem;color:var(--muted)}
+.rc{font:inherit;font-family:var(--f-display);font-size:.8rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:3px 10px;cursor:pointer}
+.rc:hover{border-color:var(--blue);color:var(--blue)}
+.rc.home::before{content:"★ ";color:var(--gold)}
+.picker{background:var(--surface);border:1px solid color-mix(in srgb,var(--blue) 40%,var(--line));border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.pk-head{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pk-head h3{font-size:1rem;flex:1;min-width:160px}
+.pk-search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:2px 10px;flex:1 1 260px;min-width:0;background:var(--bg)}
+.pk-search input{flex:1;min-width:0;border:0;background:transparent;font:inherit;color:var(--ink);padding:7px 0}
+.pk-search input:focus{outline:none}
+.pk-search:focus-within{border-color:var(--blue)}
+.pk-groups{display:flex;gap:6px;padding:10px 14px;overflow-x:auto;border-bottom:1px solid var(--line)}
+.pk-groups button{font:inherit;font-family:var(--f-display);font-size:.8rem;white-space:nowrap;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:4px 11px;cursor:pointer}
+.pk-groups button[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:#fff}
+.pk-list{max-height:340px;overflow-y:auto;padding:6px 14px 12px}
+.pk-g{font-family:var(--f-display);font-size:.76rem;color:var(--muted);letter-spacing:.04em;margin:10px 0 6px}
+.pk-names{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:6px}
+.pk-names button{font:inherit;text-align:left;font-size:.92rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:7px 10px;cursor:pointer;display:flex;gap:8px;align-items:center;min-width:0}
+.pk-names button:hover{border-color:var(--blue);background:var(--surface-2)}
+.pk-names button.on{border-color:var(--btn);background:var(--cell-own);font-weight:600}
+.pk-names button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-foot{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap;font-size:.88rem}
+.pk-foot label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.pk-foot input{width:18px;height:18px;accent-color:var(--btn)}
+.pk-foot small{color:var(--muted)}
+.firstrun{display:grid;justify-items:center;gap:10px;padding:34px 18px;text-align:center}
+.firstrun b{font-family:var(--f-display);font-size:1.1rem}
+.firstrun p{margin:0;color:var(--muted);max-width:52ch}
+.field{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 6px 4px 12px;flex:1 1 300px;min-width:0}
+.field input{flex:1;min-width:0;border:0;background:transparent;font:inherit;color:var(--ink);padding:8px 0}
+.field input:focus{outline:none}
+.field:focus-within{border-color:var(--blue)}
+.week{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.btn{font:inherit;font-family:var(--f-display);font-size:.88rem;font-weight:500;border:0;background:transparent;color:var(--ink);border-radius:9px;padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--btn);color:#fff}
+.btn.primary:hover{background:var(--btn-hover)}
+
+.week .lbl{font-family:var(--f-display);font-size:.9rem;padding:0 8px;min-width:190px;text-align:center;font-variant-numeric:tabular-nums}
+.week .lbl small{display:block;color:var(--muted);font-size:.74rem;line-height:1.2}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.82rem;margin:4px 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid var(--line)}
+.grid-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:980px;table-layout:fixed}
+.tt th,.tt td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}
+.tt tr:last-child td,.tt tr:last-child th{border-bottom:0}
+.tt th:last-child,.tt td:last-child{border-right:0}
+.tt thead th{font-family:var(--f-display);font-weight:500;font-size:.82rem;color:var(--muted);padding:9px 6px;background:var(--surface-2);text-align:center}
+.tt thead th b{display:block;color:var(--ink);font-size:.92rem;font-weight:600}
+.tt tbody th{width:96px;text-align:left;padding:10px 12px;font-family:var(--f-display);font-weight:600;font-size:.95rem;background:var(--surface)}
+.tt tbody th small{display:block;color:var(--muted);font-weight:400;font-size:.76rem;font-variant-numeric:tabular-nums}
+.tt tbody tr.is-today th{color:var(--navy);box-shadow:inset 4px 0 0 var(--gold)}
+.tt tbody tr.is-today td{background:color-mix(in srgb,var(--gold) 6%,transparent)}
+.tt td{padding:5px;height:86px}
+.slot{height:100%;border-radius:8px;padding:6px 8px;font-size:.8rem;line-height:1.32;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.slot .s{font-weight:600;color:var(--ink);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.slot .r{color:var(--muted);font-size:.76rem}
+.slot.own{background:var(--cell-own)}
+.slot.meet{background:var(--cell-meet)}
+.slot.away{background:repeating-linear-gradient(135deg,var(--urgent-soft) 0 8px,color-mix(in srgb,var(--urgent-soft) 55%,var(--surface)) 8px 16px);outline:1px solid color-mix(in srgb,var(--urgent) 30%,transparent)}
+.slot.cover{background:var(--ok-soft);outline:1.5px solid var(--ok)}
+.flag{font-family:var(--f-display);font-size:.7rem;font-weight:600;border-radius:5px;padding:1px 6px;align-self:flex-start;margin-top:auto}
+.away .flag{background:var(--urgent);color:#fff}
+.cover .flag{background:var(--ok);color:#fff}
+.flag-by{font-size:.72rem;color:var(--ink)}
+td.off{background:repeating-linear-gradient(45deg,transparent 0 6px,var(--surface-2) 6px 7px)}
+.holrow td{text-align:center;vertical-align:middle;color:var(--muted);font-family:var(--f-display)}
+.tt-empty{padding:34px 18px;text-align:center;color:var(--muted)}
+.tt-empty b{display:block;color:var(--ink);font-family:var(--f-display);font-size:1.05rem;margin-bottom:4px}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{font-family:var(--f-display);font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--navy);line-height:1.2;display:block}
+.stat span{color:var(--muted);font-size:.82rem}
+.stat.green b{color:var(--ok)} .stat.red b{color:var(--urgent)}
+/* mobile day cards */
+.daylist{display:none;gap:12px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.dcard h4{margin:0;font-family:var(--f-display);font-size:.95rem;padding:10px 14px;background:var(--surface-2);display:flex;justify-content:space-between}
+.dcard.is-today h4{background:var(--gold-soft)}
+.dcard ul{list-style:none;margin:0;padding:8px;display:grid;gap:6px}
+.dcard li{display:grid;grid-template-columns:52px 1fr;gap:8px;align-items:stretch}
+.dcard .p{font-family:var(--f-display);font-size:.8rem;color:var(--muted);padding-top:6px}
+.subs-wrap{margin-top:22px}
+.subs-wrap h3{font-size:1.05rem;margin-bottom:10px}
+table.subs{width:100%;border-collapse:collapse;min-width:640px;font-size:.9rem}
+.subs th{text-align:left;font-family:var(--f-display);font-weight:500;color:var(--muted);font-size:.8rem;padding:9px 12px;background:var(--surface-2)}
+.subs td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+.subs td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.subs tr.mine td{background:color-mix(in srgb,var(--ok) 9%,transparent)}
+.src{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.82rem;margin-top:12px;flex-wrap:wrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block}
+.dot.live{background:var(--ok)}
+
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+footer .wrap{padding-block:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:1000px){.daily{grid-template-columns:repeat(2,minmax(0,1fr))}.cal{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .grid-wrap{display:none}.daylist{display:grid}
+  .week{width:100%;justify-content:space-between}.week .lbl{min-width:0;flex:1}
+  .brand img{width:52px}
+  .kbd{display:none}
+}
+@media (max-width:440px){.daily{gap:10px}.tile .body{padding:10px 12px 12px}.tile p{display:none}.tile h3{font-size:.95rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="k-app" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18" stroke="currentColor" stroke-width="2"/><circle cx="6.5" cy="6.5" r=".9" fill="currentColor"/><circle cx="9.5" cy="6.5" r=".9" fill="currentColor"/></symbol>
+    <symbol id="k-sheet" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 9h16M4 15h16M10 9v12" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="k-form" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="9" r="1.2" fill="currentColor"/><circle cx="8.5" cy="15" r="1.2" fill="currentColor"/><path d="M12 9h4.5M12 15h4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="k-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="k-pdf" viewBox="0 0 24 24"><path d="M6 3h8l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="2"/><text x="12" y="17.5" text-anchor="middle" font-size="6.5" font-weight="700" fill="currentColor" font-family="sans-serif">PDF</text></symbol>
+    <symbol id="k-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="k-clip" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></symbol>
+    <symbol id="k-web" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3.3 3 14.7 0 18M12 3c-3 3.3-3 14.7 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="g-acad" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="g-budget" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="14.5" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="g-gen" viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 20v-6h6v6M2 20h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="g-stu" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 20c.6-3.6 3-5.5 6-5.5s5.4 1.9 6 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 4.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.2-2.3 1.2.4-2.6-1.9-1.8 2.6-.4z" fill="currentColor"/></symbol>
+    <symbol id="g-qa" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.6-3 8.3-7 10-4-1.7-7-5.4-7-10V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="g-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9.5a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.2-2.5 3.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.1" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<script>document.body.dataset.hd="__HEADER_VARIANT__"</script>
+<header class="hd">
+  <div class="hd-util"><div class="wrap"><span><b>วันนี้</b> <span class="js-today">–</span></span><span><b>ภาคเรียนที่ 2/2569</b> <span class="js-week">–</span></span></div></div>
+  <div class="wrap hd-main">
+    <div class="brand">
+      <img src="__LOGO__" alt="ตราโรงเรียนกาญจนาภิเษกวิทยาลัย สุราษฎร์ธานี" width="64" height="93">
+      <div>
+        <div class="eyebrow">KJST Portal · ศูนย์รวมระบบสารสนเทศ</div>
+        <h1>โรงเรียนกาญจนาภิเษกวิทยาลัย สุราษฎร์ธานี</h1>
+        <p>ระบบสารสนเทศเพื่อการบริหารจัดการภายในสถานศึกษา</p>
+      </div>
+    </div>
+    <div class="today" aria-live="polite">
+      <div class="pill p-date"><div class="k">วันนี้</div><div class="v js-today">–</div></div>
+      <div class="pill"><div class="k">ภาคเรียนที่ 2/2569</div><div class="v js-week">–</div><div class="prog"><i class="js-prog" style="width:0"></i></div></div>
+    </div>
+  </div>
+</header>
+__SWITCHER__
+
+<div class="wrap search">
+  <label class="box" for="q">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="q" type="search" placeholder="ค้นหาระบบหรือเอกสาร เช่น สอนแทน, e-Score, ยืมเงิน, SAR" autocomplete="off">
+    <span class="kbd">กด /</span>
+  </label>
+</div>
+
+<main class="wrap">
+  <section id="daily" aria-labelledby="h-daily">
+    <div class="sec-head">
+      <div><h2 id="h-daily">ระบบที่ใช้ทุกวัน</h2><p>เข้าระบบหลักได้ในคลิกเดียว</p></div>
+      <span class="tag">8 ระบบ</span>
+    </div>
+    <div class="daily" id="dailyGrid"></div>
+  </section>
+
+  <section aria-labelledby="h-cal">
+    <div class="sec-head">
+      <div><h2 id="h-cal">ปฏิทินการศึกษา 2/2569</h2><p>เปิดภาคเรียน 28 ต.ค. 2569 · ปิดภาคเรียน 2 มี.ค. 2570 · 85 วันเรียน</p></div>
+      <a class="btn" href="https://docs.google.com/spreadsheets/d/1fyZ25tW4qX8b5BpgtillgnX_0yAPDKqoOF6pL44cyR0/edit?usp=sharing" target="_blank" rel="noopener">เปิดปฏิทินวิชาการ <svg width="16" height="16"><use href="#i-ext"/></svg></a>
+    </div>
+    <div class="cal">
+      <div class="card">
+        <div class="bigday"><b id="dayNo">–</b><span id="dayOf">จาก 85 วันเรียน</span></div>
+        <div class="bar"><i id="dayBar" style="width:0"></i></div>
+        <div class="meta"><span id="dayLeft">–</span><span id="nextHol">–</span></div>
+      </div>
+      <div class="card"><ul class="hols" id="hols"></ul></div>
+    </div>
+  </section>
+
+  <section id="systems" aria-labelledby="h-sys">
+    <div class="sec-head">
+      <div><h2 id="h-sys">ระบบและเอกสารตามกลุ่มบริหาร</h2><p>แบบฟอร์ม เอกสาร คู่มือ และระบบสนับสนุนของแต่ละกลุ่มงาน</p></div>
+      <div class="g-tools"><span class="tag" id="linkCount">–</span><button class="btn" id="toggleAll" type="button">เปิดทั้งหมด</button></div>
+    </div>
+    <div class="groups" id="groups"></div>
+    <p class="empty" id="noHit" hidden>ไม่พบระบบที่ตรงกับคำค้น ลองพิมพ์คำที่สั้นลง</p>
+  </section>
+
+  <section id="timetable" aria-labelledby="h-tt">
+    <div class="sec-head">
+      <div><h2 id="h-tt">ตารางสอนประจำสัปดาห์</h2><p>ตารางสอนจากระบบจัดสอนแทน พร้อมคาบที่มีการสอนแทนในสัปดาห์ที่เลือก</p></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <a class="btn" href="https://panth427-kjst.github.io/Time-Table/Dashboard-2-2569.html" target="_blank" rel="noopener">ตารางทั้งโรงเรียน <svg width="16" height="16"><use href="#i-ext"/></svg></a>
+        <a class="btn primary" href="https://script.google.com/macros/s/AKfycbwLkY4-qSN5dshALjUTeu88VFKT1vyqnSb6U9k5izfsmHwxe6v270mGOsTNg8ijRZk6/exec" target="_blank" rel="noopener">บันทึกการสอนแทน <svg width="16" height="16"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+
+    <div class="tt-tools">
+      <div class="who" id="who"></div>
+      <div class="week" role="group" aria-label="เลือกสัปดาห์">
+        <button class="btn" id="prevW" type="button" aria-label="สัปดาห์ก่อน">‹</button>
+        <div class="lbl" id="weekLbl">–</div>
+        <button class="btn" id="nextW" type="button" aria-label="สัปดาห์ถัดไป">›</button>
+        <button class="btn" id="thisW" type="button">สัปดาห์นี้</button>
+      </div>
+    </div>
+    <div class="recents" id="recents" hidden></div>
+
+    <div class="picker" id="picker" hidden>
+      <div class="pk-head">
+        <h3>เลือกครูเพื่อดูตารางสอน</h3>
+        <label class="pk-search" for="pq">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--muted)"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="pq" type="search" placeholder="พิมพ์ชื่อหรือนามสกุล" autocomplete="off">
+        </label>
+        <button class="btn line" id="pkClose" type="button">ปิด</button>
+      </div>
+      <div class="pk-groups" id="pkGroups" role="group" aria-label="กลุ่มสาระ"></div>
+      <div class="pk-list" id="pkList"></div>
+      <div class="pk-foot">
+        <label for="pkPin"><input type="checkbox" id="pkPin"> จำครูที่เลือกเป็นค่าเริ่มต้นของเครื่องนี้</label>
+        <small>เครื่องที่ใช้ร่วมกันในห้องพักครู ไม่ต้องติ๊กช่องนี้</small>
+      </div>
+    </div>
+
+    <div class="summary" id="summary"></div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--cell-own)"></i>คาบสอนปกติ</span>
+      <span><i class="sw" style="background:var(--cell-meet)"></i>ประชุม / กิจกรรม</span>
+      <span><i class="sw" style="background:var(--urgent-soft);border-color:var(--urgent)"></i>มีครูสอนแทนในคาบนี้</span>
+      <span><i class="sw" style="background:var(--ok-soft);border-color:var(--ok)"></i>ได้รับมอบหมายสอนแทน</span>
+    </div>
+    <div class="grid-wrap" id="gridWrap"></div>
+    <div class="daylist" id="dayList"></div>
+
+    <div class="subs-wrap">
+      <h3 id="subsTitle">การสอนแทนทั้งโรงเรียนในสัปดาห์นี้</h3>
+      <div class="grid-wrap" style="display:block" id="subsWrap"></div>
+    </div>
+    <div class="src"><i class="dot" id="srcDot"></i><span id="srcTxt">–</span></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>กลุ่มบริหารงานวิชาการ · โรงเรียนกาญจนาภิเษกวิทยาลัย สุราษฎร์ธานี</span>
+    <span>ระบบส่วนใหญ่ต้องลงชื่อเข้าใช้ด้วยบัญชี @kjst.ac.th</span>
+  </div>
+</footer>
+
+<script>
+/* ===== CONFIG =====
+   API_URL: วาง URL ของ Apps Script Web App (ไฟล์ apps-script/Code.gs) เพื่อดึงข้อมูลสดจากระบบจัดสอนแทน
+   ถ้าเว้นว่าง หน้าเว็บจะใช้ข้อมูลชุดล่าสุดที่ฝังไว้ (snapshot) */
+const CONFIG = { API_URL: "__API_URL__" };
+const SNAPSHOT = __SNAPSHOT__;
+
+/* ===== ILLUSTRATIONS (original, drawn for this page) ===== */
+const ART = {
+attendance:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><rect class="il-navy" x="46" y="16" width="56" height="74" rx="7"/><rect class="il-paper" x="51" y="24" width="46" height="62" rx="4"/><rect class="il-gold" x="64" y="11" width="20" height="10" rx="4"/><path class="il-gl" d="M57 38l4 4 7-8"/><rect class="il-soft" x="73" y="36" width="18" height="4" rx="2"/><path class="il-gl" d="M57 54l4 4 7-8"/><rect class="il-soft" x="73" y="52" width="18" height="4" rx="2"/><circle cx="62" cy="72" r="4.5" fill="none" stroke="var(--urgent)" stroke-width="3"/><rect class="il-soft" x="73" y="70" width="14" height="4" rx="2"/><circle class="il-blue" cx="120" cy="44" r="9"/><path class="il-blue" d="M104 80c1-12 8-19 16-19s15 7 16 19z"/></svg>`,
+timetable:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><rect class="il-paper" x="28" y="18" width="104" height="70" rx="8" stroke="var(--navy)" stroke-width="3"/><rect class="il-navy" x="28" y="18" width="104" height="16" rx="8"/><rect class="il-navy" x="28" y="26" width="104" height="8"/><g class="il-soft"><rect x="36" y="42" width="18" height="12" rx="3"/><rect x="58" y="42" width="18" height="12" rx="3"/><rect x="102" y="42" width="22" height="12" rx="3"/><rect x="36" y="60" width="18" height="12" rx="3"/><rect x="80" y="60" width="18" height="12" rx="3"/><rect x="102" y="60" width="22" height="12" rx="3"/></g><rect class="il-blue" x="80" y="42" width="18" height="12" rx="3"/><rect class="il-gold" x="58" y="60" width="18" height="12" rx="3"/><circle class="il-paper" cx="40" cy="26" r="2.5"/><circle class="il-paper" cx="48" cy="26" r="2.5"/></svg>`,
+substitute:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><circle class="il-navy" cx="48" cy="40" r="11"/><path class="il-navy" d="M28 86c1-16 9-25 20-25s19 9 20 25z"/><circle class="il-gold" cx="112" cy="40" r="11"/><path class="il-gold" d="M92 86c1-16 9-25 20-25s19 9 20 25z"/><path class="il-line" d="M66 30c8-8 20-8 28 0"/><path class="il-line" d="M90 22l4 8-9 1"/><path d="M94 52c-8 8-20 8-28 0" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/><path d="M70 60l-4-8 9-1" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+eoffice:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><rect class="il-paper" x="60" y="12" width="52" height="64" rx="5" stroke="var(--navy)" stroke-width="3" transform="rotate(8 86 44)"/><g transform="rotate(8 86 44)"><rect class="il-soft" x="68" y="24" width="34" height="4" rx="2"/><rect class="il-soft" x="68" y="32" width="28" height="4" rx="2"/><rect class="il-soft" x="68" y="40" width="34" height="4" rx="2"/><circle cx="96" cy="62" r="8" fill="none" stroke="var(--urgent)" stroke-width="3"/></g><rect class="il-navy" x="30" y="44" width="72" height="46" rx="6"/><path class="il-wl" d="M33 48l33 22 33-22"/><circle class="il-gold" cx="118" cy="30" r="10"/><path class="il-wl" d="M113 30l4 4 6-7"/></svg>`,
+escore:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><rect class="il-paper" x="30" y="16" width="70" height="74" rx="6" stroke="var(--navy)" stroke-width="3"/><rect class="il-soft" x="40" y="28" width="34" height="5" rx="2.5"/><rect class="il-soft" x="40" y="40" width="50" height="4" rx="2"/><rect class="il-soft" x="40" y="50" width="50" height="4" rx="2"/><rect class="il-blue" x="42" y="70" width="8" height="12" rx="2"/><rect class="il-navy" x="54" y="62" width="8" height="20" rx="2"/><rect class="il-gold" x="66" y="58" width="8" height="24" rx="2"/><rect class="il-blue" x="78" y="66" width="8" height="16" rx="2"/><circle class="il-gold" cx="116" cy="40" r="20"/><text x="116" y="48" text-anchor="middle" font-family="Prompt,sans-serif" font-weight="700" font-size="22" fill="var(--navy-deep)">4</text></svg>`,
+calendar:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><rect class="il-paper" x="44" y="18" width="72" height="72" rx="8" stroke="var(--navy)" stroke-width="3"/><path class="il-navy" d="M44 26a8 8 0 0 1 8-8h56a8 8 0 0 1 8 8v12H44z"/><rect class="il-gold" x="58" y="10" width="6" height="16" rx="3"/><rect class="il-gold" x="96" y="10" width="6" height="16" rx="3"/><text x="80" y="74" text-anchor="middle" font-family="Prompt,sans-serif" font-weight="700" font-size="26" fill="var(--navy)">2/69</text><path d="M116 72l14 14" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/><circle cx="130" cy="34" r="6" class="il-red"/></svg>`,
+ehr:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><rect class="il-navy" x="30" y="26" width="100" height="62" rx="8"/><rect class="il-paper" x="36" y="34" width="88" height="48" rx="5"/><circle class="il-blue" cx="58" cy="52" r="9"/><path class="il-blue" d="M44 76c1-8 7-13 14-13s13 5 14 13z"/><rect class="il-soft" x="80" y="46" width="36" height="5" rx="2.5"/><rect class="il-soft" x="80" y="56" width="28" height="4" rx="2"/><rect class="il-gold" x="80" y="66" width="20" height="6" rx="3"/><rect class="il-gold" x="72" y="16" width="16" height="14" rx="4"/></svg>`,
+eservice:`<svg viewBox="0 0 160 100"><ellipse class="il-blob" cx="80" cy="56" rx="70" ry="40"/><g transform="translate(96 52)"><circle r="24" class="il-navy"/><g class="il-navy"><rect x="-6" y="-32" width="12" height="12" rx="2"/><rect x="-6" y="20" width="12" height="12" rx="2"/><rect x="-32" y="-6" width="12" height="12" rx="2"/><rect x="20" y="-6" width="12" height="12" rx="2"/><rect x="-6" y="-32" width="12" height="12" rx="2" transform="rotate(45)"/><rect x="-6" y="20" width="12" height="12" rx="2" transform="rotate(45)"/><rect x="-32" y="-6" width="12" height="12" rx="2" transform="rotate(45)"/><rect x="20" y="-6" width="12" height="12" rx="2" transform="rotate(45)"/></g><circle r="9" class="il-paper"/></g><path d="M34 82l30-30" stroke="var(--gold)" stroke-width="9" stroke-linecap="round"/><path class="il-gold" d="M58 34a14 14 0 0 1 18 18l-6-1-3-7-7-3z"/></svg>`
+};
+
+/* ===== LINKS (จากชีต "หน้ารวมระบบ") ===== */
+const ATT = "https://docs.google.com/spreadsheets/d/1KFVE1AenbfaRiAWxRefoU9xIR8b0fKgMZ4RReMnruhw/edit";
+const DAILY = [
+ {art:"attendance",t:"รายงานการมาเรียน",d:"E-Attendance เช็กชื่อนักเรียนรายคาบ/รายวัน",k:"เว็บแอป",u:"https://panth427-kjst.github.io/KJST-Attendance/",kw:"เช็กชื่อ มาเรียน ขาด attendance"},
+ {art:"timetable",t:"ตารางเรียน-ตารางสอน",d:"Dashboard ตารางเรียนนักเรียนและตารางสอนครู 2/2569",k:"เว็บแอป",u:"https://panth427-kjst.github.io/Time-Table/Dashboard-2-2569.html",kw:"ตาราง timetable"},
+ {art:"substitute",t:"ระบบจัดสอนแทน",d:"บันทึกการลา มอบหมายครูสอนแทน และสลับคาบ",k:"เว็บแอป",u:"https://script.google.com/macros/s/AKfycbwLkY4-qSN5dshALjUTeu88VFKT1vyqnSb6U9k5izfsmHwxe6v270mGOsTNg8ijRZk6/exec",kw:"สอนแทน ลา สลับคาบ"},
+ {art:"eoffice",t:"KJST e-Office",d:"สารบรรณอิเล็กทรอนิกส์ รับ-ส่ง-เกษียนหนังสือราชการ",k:"เว็บแอป",u:"https://script.google.com/a/macros/kjst.ac.th/s/AKfycby1h12m12VD4QFgWy7UFv2BgnQIQr2exMJZTrNCcYeWX06zse4OdGo5584X_PESRTgAZw/exec",kw:"สารบรรณ หนังสือ eoffice"},
+ {art:"escore",t:"KJST e-Score",d:"บันทึกคะแนนเก็บและผลการเรียนรายวิชา",k:"เว็บแอป",u:"https://script.google.com/a/macros/kjst.ac.th/s/AKfycbwrNtIk94Peqe26Wf59mnmuAg1LNNSmiEfOrRvhOT8J-k01Za6r_Lzg_1ZocxeMT3qQwQ/exec",kw:"คะแนน score ปพ"},
+ {art:"calendar",t:"ปฏิทินการศึกษา 2/2569",d:"กำหนดการและกิจกรรมของกลุ่มบริหารงานวิชาการ",k:"Sheets",u:"https://docs.google.com/spreadsheets/d/1fyZ25tW4qX8b5BpgtillgnX_0yAPDKqoOF6pL44cyR0/edit?usp=sharing",kw:"ปฏิทิน วันหยุด calendar"},
+ {art:"ehr",t:"KJST e-HR",d:"ระบบงานบุคลากร ข้อมูลครูและการลา",k:"เว็บแอป",u:"https://script.google.com/a/macros/kjst.ac.th/s/AKfycbyAiZi9naAFVN2sMqLSbiTA-LKWTgXr3Josvrwjx-NDluYyhzjRFPu7eEA6UcS0P94R/exec",kw:"บุคลากร ลา hr"},
+ {art:"eservice",t:"แจ้งซ่อม e-Service",d:"แจ้งซ่อมอาคาร ครุภัณฑ์ และติดตามสถานะงาน",k:"เว็บแอป",u:"https://script.google.com/macros/s/AKfycbzvT-AreoDYtZFySM2AbKcnoCO47LS7Aa8OyU0xN5iGBxK3zINPFtfY7rrwZ-RRPmTgSA/exec",kw:"ซ่อม service"}
+];
+const GROUPS = [
+ {id:"acad",d:"สารสนเทศวิชาการ ทะเบียน-วัดผล ตารางเรียน รายชื่อนักเรียน",icon:"g-acad",t:"กลุ่มบริหารงานวิชาการ",items:[
+  ["ระบบสารสนเทศกลุ่มบริหารงานวิชาการ","sheet","https://docs.google.com/spreadsheets/d/1PyjOp9j3lunBFPK2eOo92vw6wuQetTZW9PI6IcG_GGA/edit?usp=sharing"],
+  ["ระบบงานทะเบียน-วัดผล (SGS)","web","https://sgs.bopp-obec.info/","sgs ทะเบียน วัดผล ปพ"],
+  ["สถิติการมาเรียน","sheet",ATT+"#gid=1792444352","มาเรียน สถิติ"],
+  ["รายงานการมาเรียนรายวัน (ชีตรวม)","sheet",ATT+"?usp=sharing","มาเรียน"],
+  ["รายชื่อนักเรียน (Dashboard)","app","https://panth427.github.io/KJST-Students-Sheets/dashboard.html","นักเรียน รายชื่อ"],
+  ["รายชื่อนักเรียน (โฟลเดอร์)","folder","https://drive.google.com/drive/folders/1zvUa3WHY7aqAawZaAzqTno_Qg1bamXcf?usp=drive_link","นักเรียน รายชื่อ"],
+  ["ตารางเรียนนักเรียน (โฟลเดอร์)","folder","https://drive.google.com/drive/folders/1fXjkLrRdM3uguwmkH8Td0LFd4IK2iOAX?usp=sharing","ตาราง"],
+  ["ตารางสอนครู (โฟลเดอร์)","folder","https://drive.google.com/drive/folders/1kDvlAFTXcivwc3AXnT6eosLgtbFe5dN4?usp=drive_link","ตาราง"],
+  ["เอกสารงานวิชาการ","folder","https://drive.google.com/drive/folders/1pGBDaI_v-lmCzkzbJWmg9LUVdbDh0M7Y?usp=sharing"],
+  ["ระบบตรวจวิเคราะห์ร่างคำสั่ง","app","https://script.google.com/a/macros/kjst.ac.th/s/AKfycbxYgV2wNCtEE64GSmXF4UQBVXk2bJcRqXXF0aIdwmZSbvrM4tutH3-gqEXXs5s40uJQ/exec","คำสั่ง ร่าง"]
+ ]},
+ {id:"help",d:"คู่มือและคลิปสอนใช้ e-Score, Autofill, e-Office",icon:"g-help",t:"คู่มือและคลิปแนะนำ",items:[
+  ["คู่มือการใช้งาน KJST e-Score","pdf","https://drive.google.com/file/d/1JOnhjFbEAEJh54wj-qF3pug8WWUj5fY6/view?usp=drive_link","escore คะแนน"],
+  ["คลิปแนะนำระบบ e-Score และการลงชื่อเข้าใช้","clip","https://drive.google.com/file/d/1-PjjS3NXLvr6MD7kjLrFIP4fdsxUPAI-/view?usp=sharing","escore คะแนน login"],
+  ["คลิปการตั้งค่าคะแนนรายวิชา","clip","https://drive.google.com/file/d/1Hf0P9o7g9WhpArKtfOUlwDdTtpwjqItp/view?usp=drive_link","escore คะแนน"],
+  ["คลิปการบันทึกคะแนน","clip","https://drive.google.com/file/d/1vhlKEScXy7PXXelL2aHEg7a6qfZQf-w0/view?usp=sharing","escore คะแนน"],
+  ["คลิปการติดตั้งโปรแกรม Autofill","clip","https://drive.google.com/file/d/1HmDIO_M8jo6WNReNIKvzcgOyQFyH0hDd/view?usp=drive_link","autofill"],
+  ["คลิปการใช้งานโปรแกรม Autofill","clip","https://drive.google.com/file/d/1ax30DBqw_lXNjsE0wlVX_UTmc9f5ejWE/view?usp=drive_link","autofill"],
+  ["คู่มือการใช้งาน e-Office","web","https://panth427.github.io/KJST-e-office_Manual/","eoffice สารบรรณ"]
+ ]},
+ {id:"budget",d:"e-Budget ขออนุมัติใช้เงิน ยืมเงิน เดินทางไปราชการ",icon:"g-budget",t:"กลุ่มบริหารงบประมาณและสินทรัพย์",items:[
+  ["แบบคุมการเบิกจ่ายงบประมาณ (KJST e-Budget)","sheet","https://docs.google.com/spreadsheets/d/1NEQbnGaDLgNzG9HPSwOxMRYgxfdG31cFWWhhRiACliE/edit?usp=sharing","งบ budget เบิกจ่าย"],
+  ["ยื่นคำขออนุมัติใช้เงิน (ตัดแผน)","form","https://docs.google.com/forms/d/e/1FAIpQLSe_z7bcd5kdKX6YRhMYxZJFki5OFyE7ChxoXEcBPI1Lbr2VwQ/viewform?usp=header","ตัดแผน ใช้เงิน"],
+  ["แบบขอใช้เงินตามแผนฯ (.docx)","doc","https://docs.google.com/document/d/170l4mnWf7cXRnzWNRrSks58uXQ4EfURV/edit?usp=sharing&ouid=112382937006194308274&rtpof=true&sd=true","ตัดแผน ใช้เงิน"],
+  ["แบบขอใช้เงินตามแผนฯ (.pdf)","pdf","https://drive.google.com/file/d/1XAtXAAObB5oBNIodUfSay02nJ_CKgFH5/view?usp=sharing","ตัดแผน ใช้เงิน"],
+  ["บันทึกข้อความเปลี่ยนแปลงโครงการ","doc","https://docs.google.com/document/d/1rAlIAIYOv5He8LyTMVSKvEMwwz4j17zc/edit?usp=drive_link&ouid=112382937006194308274&rtpof=true&sd=true","โครงการ"],
+  ["บันทึกข้อความเปลี่ยนแปลงโครงการ (.pdf)","pdf","https://drive.google.com/file/d/1rHKuKax6xOPIilFKRqfvO3OB2X_0qX_9/view?usp=drive_link","โครงการ"],
+  ["สัญญายืมเงินไปราชการ","doc","https://docs.google.com/document/d/1nGH3CFNRyIFoGiX6rlHGNNT15gSAsdj5/edit?usp=drive_link","ยืมเงิน"],
+  ["แบบรายงานการเดินทางไปราชการ","sheet","https://docs.google.com/spreadsheets/d/1QYB8BAK3vKPlR0evM6g6XYJ_fUS56m2f/edit?usp=drive_link","เดินทาง ราชการ"],
+  ["บันทึกข้อความปะหน้าล้างหนี้เงินยืม","doc","https://docs.google.com/document/d/1ZNebVEzt8ME3dN1m6l8TxeXuses5BcG8/edit?usp=drive_link&ouid=112382937006194308274&rtpof=true&sd=true","ยืมเงิน ล้างหนี้"],
+  ["บันทึกข้อความปะหน้าล้างหนี้เงินยืม (.pdf)","pdf","https://drive.google.com/file/d/17Tyid184uuykYsXJG-XYCzclDc49GxpW/view?usp=drive_link","ยืมเงิน ล้างหนี้"],
+  ["เอกสารกลุ่มบริหารงบประมาณและสินทรัพย์","sheet","https://docs.google.com/spreadsheets/d/1HKa5mvl9VbOeneeyCKI3Zag15cni-KwW97ceE_g85uY/edit?usp=sharing"]
+ ]},
+ {id:"gen",d:"e-HR แจ้งซ่อม งานพิมพ์-สำเนา ขอใช้รถ",icon:"g-gen",t:"กลุ่มบริหารทั่วไปและงานบุคคล",items:[
+  ["ระบบงานบุคลากร (KJST e-HR)","app","https://script.google.com/a/macros/kjst.ac.th/s/AKfycbyAiZi9naAFVN2sMqLSbiTA-LKWTgXr3Josvrwjx-NDluYyhzjRFPu7eEA6UcS0P94R/exec","hr บุคลากร"],
+  ["แจ้งซ่อม (e-Service)","app","https://script.google.com/macros/s/AKfycbzvT-AreoDYtZFySM2AbKcnoCO47LS7Aa8OyU0xN5iGBxK3zINPFtfY7rrwZ-RRPmTgSA/exec","ซ่อม"],
+  ["ยื่นขอพิมพ์เอกสาร-ทำสำเนา","form","https://docs.google.com/forms/d/e/1FAIpQLScPmhSN-Ayemx0CwHUTZrp4Uiegzcj5_ezePJPmhlQ3Vl149A/viewform?usp=sharing&ouid=112382937006194308274","พิมพ์ สำเนา ถ่ายเอกสาร"],
+  ["ติดตามงานพิมพ์-ทำสำเนา","sheet","https://docs.google.com/spreadsheets/d/1njiBOjR-oT0tRRHIBRM6lIKY3Fw5dOdAG-UyIcuCQPc/edit?usp=sharing","พิมพ์ สำเนา"],
+  ["แบบขอใช้รถโรงเรียน","doc","https://docs.google.com/document/d/1gbwqiLo3VEr4qI5SlMBPEugUAowqppm-/edit?usp=drive_link","รถ"]
+ ]},
+ {id:"stu",d:"KJST Plus คะแนนความประพฤติ หอพัก",icon:"g-stu",t:"กลุ่มบริหารงานกิจการนักเรียน",items:[
+  ["ระบบเพิ่มคะแนนพฤติกรรม (KJST Plus)","form","https://forms.gle/QUsSWqXMAZWZLEKy8","พฤติกรรม ความประพฤติ plus"],
+  ["คะแนนความประพฤติ 2568","sheet","https://docs.google.com/spreadsheets/d/1v9PthrBwvfX-mpG98TZpThJdZ_9Knnvmg7gRb4Ef8VA/edit?usp=sharing","ความประพฤติ"],
+  ["คะแนนความประพฤติ 2567","sheet","https://docs.google.com/spreadsheets/d/1539c6Lw0y79MUPNxQ6njIZ8vDU_ttqH1E3J78DhxZhI/edit?usp=drivesdk","ความประพฤติ"],
+  ["รายงานประจำวันของนักเรียนหอพัก","sheet","https://docs.google.com/spreadsheets/d/1sucsITKCnox7bhYk0NH7GzyG-hOZBzpPEnz_KC2Y9CE/edit?usp=sharing","หอพัก"]
+ ]},
+ {id:"qa",d:"SAR รายปี เอกสารประกอบ แผนปฏิบัติการ",icon:"g-qa",t:"งานประกันคุณภาพและแผนปฏิบัติการ",items:[
+  ["เว็บไซต์งานประกันคุณภาพ (SAR)","web","https://sites.google.com/kjst.ac.th/sar-kjst/%E0%B8%AB%E0%B8%99%E0%B8%B2%E0%B9%81%E0%B8%A3%E0%B8%81","sar ประกัน"],
+  ["คำสั่งแต่งตั้งงานประกันคุณภาพ","pdf","https://drive.google.com/file/d/1HGuqTC2M6MUD_V-BsDkDZIGLJrIC0JWL/view?usp=sharing","sar คำสั่ง"],
+  ["เอกสารประกอบ","folder","https://drive.google.com/drive/folders/1ZJrugpaNmu-kbp3jiL8MrI2W4JPCcDZ5?usp=sharing","sar"],
+  ["—SAR รายปี"],
+  ["SAR 2568","pdf","https://drive.google.com/file/d/1tOWqHjEcE91RTdO-rJt5fv_rl5_f3Kdk/view?usp=drive_link","sar"],
+  ["SAR 2567","pdf","https://drive.google.com/file/d/1Yju_6lCwY3VHOH7iXyNuPq4L9FkRLAXr/view?usp=drive_link","sar"],
+  ["SAR 2566","pdf","https://drive.google.com/file/d/1qlKPE8SZf1DfvwsD-DrABV7Z4R2d3hG9/view?usp=sharing","sar"],
+  ["SAR 2565","pdf","https://drive.google.com/file/d/1oTu_yCZfPnOJvAnjDtrMfYc3dJn5FqBs/view?usp=sharing","sar"],
+  ["SAR 2564","pdf","https://drive.google.com/file/d/1sX72pxrPwJIdVSpE1VvQO_tQJZKuQbH5/view?usp=sharing","sar"],
+  ["—แผนปฏิบัติการ 2568"],
+  ["แผนปฏิบัติการ 2568 (ฉบับรวม)","pdf","https://drive.google.com/file/d/1ltS80aI8D3a6tPR9TmQtC1WBYaIRcxUW/view?usp=drive_link","แผน"],
+  ["ส่วนหน้า","pdf","https://drive.google.com/file/d/15SLgnGPmStAlwNK8bXgBb0Y7cvyKAKXm/view?usp=drive_link","แผน"],
+  ["กลุ่มบริหารงานวิชาการ","pdf","https://drive.google.com/file/d/1cqPHQmW3sFQhmHO6CKLxSVSEmP2zWmXu/view?usp=drive_link","แผน"],
+  ["กลุ่มบริหารงบประมาณและสินทรัพย์","pdf","https://drive.google.com/file/d/1VOaly7AqkkLrL_Y5wWBPar22XyZbAv0u/view?usp=drive_link","แผน"],
+  ["กลุ่มบริหารงานบุคคล","pdf","https://drive.google.com/file/d/1wCUEX5Ns2GhcHAlXL-vugdKkTzrQOuJ-/view?usp=drive_link","แผน"],
+  ["กลุ่มบริหารงานกิจการนักเรียน","pdf","https://drive.google.com/file/d/1grP0fitfkuUIOEreci2EuJKVFQ9Kr1i0/view?usp=drive_link","แผน"],
+  ["กลุ่มบริหารทั่วไป","pdf","https://drive.google.com/file/d/1k99bd_gbxYt5lhDSfnH3sdMQHuJNPkh7/view?usp=drive_link","แผน"]
+ ]}
+];
+const KIND = {app:["k-app","เว็บแอป"],sheet:["k-sheet","Sheets"],form:["k-form","ฟอร์ม"],doc:["k-doc","Docs"],pdf:["k-pdf","PDF"],folder:["k-folder","โฟลเดอร์"],clip:["k-clip","คลิป"],web:["k-web","เว็บไซต์"]};
+
+/* ===== CALENDAR 2/2569 ===== */
+const SEM = {start:"2026-10-28", end:"2027-03-02", weekOneMonday:"2026-10-26"};
+const HOLIDAYS = [
+ ["2026-12-07","ชดเชยวันพ่อแห่งชาติ","5 ธ.ค. ตรงวันเสาร์"],
+ ["2026-12-10","วันรัฐธรรมนูญ",""],
+ ["2026-12-31","วันสิ้นปี",""],
+ ["2027-01-01","วันขึ้นปีใหม่",""],
+ ["2027-02-22","ชดเชยวันมาฆบูชา","21 ก.พ. ตรงวันอาทิตย์"]
+];
+const HOLMAP = Object.fromEntries(HOLIDAYS.map(h=>[h[0],h[1]]));
+
+/* ===== helpers ===== */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const iso = d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const parseISO = s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays = (d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const TH_M = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const TH_D = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+const thShort = d=>`${d.getDate()} ${TH_M[d.getMonth()]}`;
+const thYear = d=>d.getFullYear()+543;
+const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const shortName = n=>n.replace(/^(นางสาว|นาง|นาย|ว่าที่ ร\.ต\.|ส\.อ\.|Mr\.|Mrs\.|Ms\.|MR\.)\s*/,"");
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+function schoolDays(){
+  const out=[];let d=parseISO(SEM.start);const e=parseISO(SEM.end);
+  while(d<=e){const w=d.getDay();if(w>0&&w<6&&!HOLMAP[iso(d)])out.push(iso(d));d=addDays(d,1);}
+  return out;
+}
+const DAYS = schoolDays();
+const mondayOf = d=>addDays(d,-((d.getDay()+6)%7));
+const semWeek = mon=>Math.floor((mon-parseISO(SEM.weekOneMonday))/(7*864e5))+1;
+
+/* ===== header + calendar ===== */
+function renderToday(){
+  const tTxt = TODAY.toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  document.querySelectorAll(".js-today").forEach(e=>e.textContent=tTxt);
+  const done = DAYS.filter(x=>x<=iso(TODAY)).length;
+  const pct = Math.round(done/DAYS.length*100);
+  const w = semWeek(mondayOf(TODAY));
+  const wTxt = TODAY<parseISO(SEM.start)?"ยังไม่เปิดภาคเรียน":(TODAY>parseISO(SEM.end)?"ปิดภาคเรียนแล้ว":`สัปดาห์ที่ ${w} · เรียนแล้ว ${done}/${DAYS.length} วัน`);
+  document.querySelectorAll(".js-week").forEach(e=>e.textContent=wTxt);
+  document.querySelectorAll(".js-prog").forEach(e=>e.style.width=pct+"%");
+  $("#dayNo").textContent = done;
+  $("#dayBar").style.width = pct+"%";
+  $("#dayLeft").textContent = `เหลืออีก ${DAYS.length-done} วันเรียน (${pct}%)`;
+  const nx = HOLIDAYS.find(h=>h[0]>=iso(TODAY));
+  $("#nextHol").textContent = nx?`วันหยุดถัดไปอีก ${Math.round((parseISO(nx[0])-TODAY)/864e5)} วัน`:"";
+  $("#hols").innerHTML = HOLIDAYS.map(h=>{
+    const d=parseISO(h[0]);const cls=h[0]<iso(TODAY)?"past":(nx&&nx[0]===h[0]?"next":"");
+    return `<li class="${cls}"><span class="dbox"><i>${TH_M[d.getMonth()]} ${String(thYear(d)).slice(2)}</i><b>${d.getDate()}</b></span><span class="n">${esc(h[1])}<small>วัน${TH_D[d.getDay()]}${h[2]?" · "+esc(h[2]):""}</small></span></li>`;
+  }).join("");
+}
+
+/* ===== links ===== */
+function renderDaily(){
+  $("#dailyGrid").innerHTML = DAILY.map(x=>`<a class="tile" href="${esc(x.u)}" target="_blank" rel="noopener" data-q="${esc((x.t+" "+x.d+" "+x.kw).toLowerCase())}">
+    <div class="art" aria-hidden="true">${ART[x.art]}</div>
+    <div class="body"><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p>
+    <div class="foot"><span class="chip">${esc(x.k)}</span><span class="go">เข้าสู่ระบบ <svg width="16" height="16"><use href="#i-arrow"/></svg></span></div></div></a>`).join("");
+}
+function renderGroups(){
+  let n=0;
+  $("#groups").innerHTML = GROUPS.map(g=>{
+    const cnt=g.items.filter(i=>i[1]).length;n+=cnt;
+    const lis=g.items.map(i=>{
+      if(!i[1]) return `<li class="subhead">${esc(i[0].slice(1))}</li>`;
+      const [ic,lab]=KIND[i[1]];
+      return `<li data-q="${esc((i[0]+" "+(i[3]||"")+" "+g.t).toLowerCase())}"><a href="${esc(i[2])}" target="_blank" rel="noopener"><span class="ki ${ic}"><svg><use href="#${ic}"/></svg></span><span class="t">${esc(i[0])}</span><span class="chip">${lab}</span></a></li>`;
+    }).join("");
+    return `<details class="group" data-g="${g.id}"><summary><span class="gicon"><svg><use href="#${g.icon}"/></svg></span><span class="gt"><h3>${esc(g.t)}</h3><small>${esc(g.d)}</small></span><span class="gcount">${cnt}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><ul class="links">${lis}</ul></details>`;
+  }).join("");
+  $("#linkCount").textContent = n+" รายการ";
+  document.querySelectorAll(".group").forEach(g=>g.addEventListener("toggle",syncToggleAll));
+}
+function syncToggleAll(){const all=[...document.querySelectorAll(".group:not([hidden])")];$("#toggleAll").textContent=all.length&&all.every(g=>g.open)?"ปิดทั้งหมด":"เปิดทั้งหมด"}
+function applySearch(){
+  const q=$("#q").value.trim().toLowerCase();
+  let hit=0;
+  document.querySelectorAll(".tile").forEach(t=>{const ok=!q||t.dataset.q.includes(q);t.hidden=!ok;hit+=ok});
+  document.querySelectorAll(".group").forEach(g=>{
+    let any=0;
+    g.querySelectorAll("li[data-q]").forEach(li=>{const ok=!q||li.dataset.q.includes(q);li.hidden=!ok;any+=ok});
+    g.querySelectorAll(".subhead").forEach(s=>s.hidden=!!q);
+    g.hidden=!any;hit+=any;
+    if(q){ if(!g.open){g.open=true;g.dataset.auto="1"} }
+    else if(g.dataset.auto){g.open=false;delete g.dataset.auto}
+  });
+  $("#noHit").hidden=hit>0;
+  $("#daily").hidden = q && !document.querySelector(".tile:not([hidden])");
+  syncToggleAll();
+}
+
+/* ===== timetable ===== */
+let showAll=false, CUR="", GROUPOF={}, pkGroup="ทั้งหมด", DATA=null, TEACHERS=[], BY=new Map(), weekMon=null;
+const MEET=/^(ประชุม|PLC|กิจกรรมชุมนุม|ชุมนุม|HR|Homeroom|ลูกเสือ|แนะแนว)/i;
+function loadData(d,src){
+  DATA=d; TEACHERS=d.teachers; BY=new Map();
+  d.rows.forEach(r=>{const t=TEACHERS[r[0]];if(!BY.has(t))BY.set(t,[]);BY.get(t).push(r)});
+  GROUPOF=d.groups||{};
+  const up=new Date(d.updated);
+  $("#srcDot").className="dot"+(src==="live"?" live":"");
+  $("#srcTxt").textContent=(src==="live"?"เชื่อมต่อระบบจัดสอนแทนแล้ว · ":"ข้อมูลชุดล่าสุดจากระบบจัดสอนแทน · ")+`อัปเดต ${up.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"})} · ครู ${TEACHERS.length} คน`;
+  renderTT();
+}
+function weekDates(){return [0,1,2,3,4].map(i=>addDays(weekMon,i))}
+function subsInWeek(){
+  const a=iso(weekMon),b=iso(addDays(weekMon,4));
+  return DATA.subs.filter(s=>s.d>=a&&s.d<=b).sort((x,y)=>x.d.localeCompare(y.d)||x.p-y.p);
+}
+function cellFor(t,dow,p,dateIso,subs){
+  const own=(BY.get(t)||[]).find(r=>r[1]===dow&&r[2]===p);
+  const away=subs.find(s=>s.a===t&&s.d===dateIso&&s.p===p);
+  const cover=subs.find(s=>s.by===t&&s.d===dateIso&&s.p===p);
+  if(cover) return `<div class="slot cover"><span class="s">${esc(cover.s)}</span><span class="r">${esc(cover.r)}</span><span class="flag-by">แทน ครู${esc(shortName(cover.a))}</span><span class="flag">สอนแทน</span></div>`;
+  if(away) return `<div class="slot away"><span class="s">${esc(away.s)}</span><span class="r">${esc(away.r)}</span><span class="flag-by">ครู${esc(shortName(away.by))} สอนแทน</span><span class="flag">มีผู้สอนแทน</span></div>`;
+  if(own){const m=MEET.test(own[3]);return `<div class="slot ${m?"meet":"own"}"><span class="s">${esc(own[3])}</span><span class="r">${esc(own[4])}</span></div>`}
+  return "";
+}
+/* ---- teacher selection (no login: remembered per device) ---- */
+const prefs={
+  def(){return store.get("kjst.teacher.default")||""},
+  setDef(v){store.set("kjst.teacher.default",v)},
+  recent(){try{return JSON.parse(store.get("kjst.teacher.recent")||"[]")}catch(e){return []}},
+  push(v){const r=[v,...prefs.recent().filter(x=>x!==v)].slice(0,5);store.set("kjst.teacher.recent",JSON.stringify(r))}
+};
+const initials=n=>{const s=shortName(n).trim().replace(/^[เแโใไ]/,"");return s.charAt(0).toUpperCase()||"?"};
+function pickTeacher(v,pin){
+  if(!BY.has(v))return;
+  CUR=v;prefs.push(v);
+  if(pin)prefs.setDef(v);
+  $("#picker").hidden=true;renderTT();
+  document.getElementById("timetable").scrollIntoView({block:"start",behavior:"smooth"});
+}
+function renderWho(){
+  const def=prefs.def(),t=CUR;
+  if(BY.has(t)){
+    const isDef=t===def;
+    $("#who").innerHTML=`<span class="ava" aria-hidden="true">${esc(initials(t))}</span>
+      <span class="nm"><b>${esc(t)}${isDef?'<span class="pinbadge">★ ค่าเริ่มต้นของเครื่องนี้</span>':""}</b><small>กลุ่มสาระฯ ${esc(GROUPOF[t]||"–")} · ${(BY.get(t)||[]).length} คาบ/สัปดาห์</small></span>
+      <span class="acts"><button class="btn line" type="button" data-open-picker>เปลี่ยนครู</button>${isDef?`<button class="btn" type="button" id="unpin">เลิกจำ</button>`:`<button class="btn" type="button" id="pinNow">☆ ตั้งเป็นค่าเริ่มต้น</button>`}</span>`;
+  } else {
+    $("#who").innerHTML=`<span class="ava" aria-hidden="true">?</span><span class="nm"><b>ยังไม่ได้เลือกครู</b><small>เลือกชื่อเพื่อดูตารางสอนรายสัปดาห์</small></span><span class="acts"><button class="btn primary" type="button" data-open-picker>เลือกครู</button></span>`;
+  }
+  const rec=prefs.recent().filter(x=>x!==t&&BY.has(x));
+  const showHome=def&&def!==t&&BY.has(def);
+  const chips=(showHome?[`<button class="rc home" type="button" data-pick="${esc(def)}">${esc(shortName(def))}</button>`]:[]).concat(rec.filter(x=>x!==def).slice(0,4).map(x=>`<button class="rc" type="button" data-pick="${esc(x)}">${esc(shortName(x))}</button>`));
+  $("#recents").hidden=!chips.length;
+  $("#recents").innerHTML=chips.length?`<span>ดูล่าสุด:</span>${chips.join("")}`:"";
+}
+function openPicker(){
+  $("#pkPin").checked=!prefs.def();
+  $("#picker").hidden=false;$("#pq").value="";renderPicker();
+  setTimeout(()=>$("#pq").focus(),30);
+}
+function renderPicker(){
+  const groups=["ทั้งหมด",...[...new Set(TEACHERS.map(t=>GROUPOF[t]||"อื่นๆ"))]];
+  $("#pkGroups").innerHTML=groups.map(g=>`<button type="button" data-g="${esc(g)}" aria-pressed="${g===pkGroup}">${esc(g)}</button>`).join("");
+  const q=$("#pq").value.trim().toLowerCase();
+  const list=TEACHERS.filter(t=>(pkGroup==="ทั้งหมด"||(GROUPOF[t]||"อื่นๆ")===pkGroup)&&(!q||t.toLowerCase().includes(q)));
+  const by={};list.forEach(t=>{const g=GROUPOF[t]||"อื่นๆ";(by[g]=by[g]||[]).push(t)});
+  $("#pkList").innerHTML=list.length?Object.keys(by).map(g=>`<div class="pk-g">${esc(g)} · ${by[g].length}</div><div class="pk-names">${by[g].map(t=>`<button type="button" data-choose="${esc(t)}" class="${t===CUR?"on":""}"><span class="ava" style="width:26px;height:26px;font-size:.78rem">${esc(initials(t))}</span><span>${esc(shortName(t))}</span></button>`).join("")}</div>`).join(""):`<p class="tt-empty">ไม่พบชื่อที่ค้นหา</p>`;
+}
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-open-picker],[data-pick],[data-choose],#pinNow,#unpin,#pkClose,.pk-groups button");
+  if(!el)return;
+  if(el.matches("[data-open-picker]"))openPicker();
+  else if(el.dataset.pick)pickTeacher(el.dataset.pick,false);
+  else if(el.dataset.choose)pickTeacher(el.dataset.choose,$("#pkPin").checked);
+  else if(el.id==="pinNow"){prefs.setDef(CUR);renderWho()}
+  else if(el.id==="unpin"){prefs.setDef("");renderWho()}
+  else if(el.id==="pkClose")$("#picker").hidden=true;
+  else if(el.dataset.g){pkGroup=el.dataset.g;renderPicker()}
+});
+function renderTT(){
+  if(!DATA) return;
+  const t=CUR;
+  const valid=BY.has(t);
+  renderWho();
+  const dates=weekDates();const subs=subsInWeek();
+  const w=semWeek(weekMon);
+  $("#weekLbl").innerHTML=`สัปดาห์ที่ ${w}<small>${thShort(dates[0])} – ${thShort(dates[4])} ${thYear(dates[4])}</small>`;
+  // summary
+  const mine=valid?(BY.get(t)||[]):[];
+  const teach=mine.filter(r=>!MEET.test(r[3])).length;
+  const covers=valid?subs.filter(s=>s.by===t).length:0;
+  const aways=valid?subs.filter(s=>s.a===t).length:0;
+  $("#summary").innerHTML = valid?`
+    <div class="stat"><b>${teach}</b><span>คาบสอนต่อสัปดาห์</span></div>
+    <div class="stat"><b>${mine.length-teach}</b><span>คาบประชุม / กิจกรรม</span></div>
+    <div class="stat green"><b>${covers}</b><span>คาบที่ได้รับมอบหมายสอนแทน</span></div>
+    <div class="stat red"><b>${aways}</b><span>คาบที่มีครูสอนแทนให้</span></div>`:"";
+  if(!valid){
+    const def=prefs.def();
+    const msg=`<div class="firstrun"><b>${def?"เลือกครูเพื่อดูตารางสอน":"ยังไม่ได้ตั้งครูประจำเครื่องนี้"}</b><p>หน้านี้ไม่มีการลงชื่อเข้าใช้ เลือกชื่อของท่านครั้งเดียว แล้วติ๊ก “จำเป็นค่าเริ่มต้น” ครั้งต่อไปที่เปิดจากเครื่องนี้จะเห็นตารางสอนของท่านทันที</p><button class="btn primary" type="button" data-open-picker>เลือกชื่อของฉัน</button></div>`;
+    $("#gridWrap").innerHTML=msg;$("#dayList").innerHTML=`<div class="dcard">${msg}</div>`;
+  } else {
+    const P=[1,2,3,4,5,6,7,8,9];
+    let h=`<table class="tt"><thead><tr><th style="width:96px">วัน</th>${P.map(p=>`<th><b>คาบ ${p}</b></th>`).join("")}</tr></thead><tbody>`;
+    let m="";
+    dates.forEach((d,i)=>{
+      const di=iso(d),hol=HOLMAP[di],dow=i+1,today=di===iso(TODAY);
+      const outside=di<SEM.start||di>SEM.end;
+      h+=`<tr class="${today?"is-today":""}${hol||outside?" holrow":""}"><th scope="row">${TH_D[d.getDay()]}<small>${thShort(d)}${today?" · วันนี้":""}</small></th>`;
+      if(hol||outside){h+=`<td colspan="9" class="off">${hol?"วันหยุด · "+esc(hol):"นอกภาคเรียน"}</td></tr>`;
+        m+=`<div class="dcard"><h4><span>${TH_D[d.getDay()]} ${thShort(d)}</span><span>${hol?esc(hol):"นอกภาคเรียน"}</span></h4></div>`;return;}
+      const cells=P.map(p=>cellFor(t,dow,p,di,subs));
+      h+=cells.map(c=>`<td>${c}</td>`).join("")+"</tr>";
+      const items=cells.map((c,j)=>c?`<li><span class="p">คาบ ${j+1}</span>${c}</li>`:"").join("");
+      m+=`<div class="dcard${today?" is-today":""}"><h4><span>${TH_D[d.getDay()]} ${thShort(d)}</span><span>${today?"วันนี้":""}</span></h4><ul>${items||'<li><span class="p"></span><span style="color:var(--muted);padding:6px 0">ไม่มีคาบสอน</span></li>'}</ul></div>`;
+    });
+    $("#gridWrap").innerHTML=h+"</tbody></table>";
+    $("#dayList").innerHTML=m;
+  }
+  // school-wide substitutions (no leave reasons shown)
+  $("#subsTitle").textContent=`การสอนแทนทั้งโรงเรียน สัปดาห์ที่ ${w} (${subs.length} คาบ)`;
+  $("#subsWrap").innerHTML = subs.length?`<table class="subs"><thead><tr><th>วัน</th><th>คาบ</th><th>รายวิชา / ห้อง</th><th>ครูประจำวิชา</th><th>ครูสอนแทน</th><th>หมายเหตุ</th></tr></thead><tbody>${
+    subs.map((s,k)=>{const d=parseISO(s.d);return `<tr class="${valid&&(s.by===t||s.a===t)?"mine":""}" ${k>=8&&!showAll?"hidden":""}><td class="num">${TH_D[d.getDay()].slice(0,3)} ${thShort(d)}</td><td class="num">${s.p}</td><td>${esc(s.s)}<br><span style="color:var(--muted)">${esc(s.r)}</span></td><td>${esc(shortName(s.a))}</td><td><b>${esc(shortName(s.by))}</b></td><td style="color:var(--muted)">${esc(s.n)}</td></tr>`}).join("")
+  }</tbody></table>${subs.length>8?`<div style="padding:10px 12px;border-top:1px solid var(--line)"><button class="btn" id="moreSubs" type="button">${showAll?"แสดงน้อยลง":"แสดงทั้งหมด "+subs.length+" คาบ"}</button></div>`:""}`:`<div class="tt-empty"><b>ยังไม่มีการบันทึกสอนแทนในสัปดาห์นี้</b>เมื่อมีการบันทึกในระบบจัดสอนแทน รายการจะแสดงที่นี่</div>`;
+}
+function setWeek(d){weekMon=mondayOf(d);showAll=false;renderTT()}
+document.addEventListener("click",e=>{if(e.target.id==="moreSubs"){showAll=!showAll;renderTT()}});
+
+/* ===== boot ===== */
+renderToday();renderDaily();renderGroups();
+$("#q").addEventListener("input",applySearch);
+$("#toggleAll").addEventListener("click",()=>{const gs=[...document.querySelectorAll(".group:not([hidden])")];const open=!gs.every(g=>g.open);gs.forEach(g=>{g.open=open;delete g.dataset.auto});syncToggleAll()});
+document.addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement.tagName!=="INPUT"){e.preventDefault();$("#q").focus()}});
+const startWeek = (TODAY.getDay()===0||TODAY.getDay()===6)?addDays(TODAY,7):TODAY;
+weekMon=mondayOf(startWeek);
+(function(){const old=store.get("kjst.teacher");if(old&&!prefs.def())prefs.setDef(old);})();
+if(!prefs.def()&&"__DEFAULT_TEACHER__")prefs.setDef("__DEFAULT_TEACHER__");
+CUR=prefs.def();
+$("#pq").addEventListener("input",renderPicker);
+$("#pq").addEventListener("keydown",e=>{if(e.key==="Enter"){const b=document.querySelector("#pkList [data-choose]");if(b)b.click()}if(e.key==="Escape")$("#picker").hidden=true});
+$("#prevW").addEventListener("click",()=>setWeek(addDays(weekMon,-7)));
+$("#nextW").addEventListener("click",()=>setWeek(addDays(weekMon,7)));
+$("#thisW").addEventListener("click",()=>setWeek(startWeek));
+loadData(SNAPSHOT,"snapshot");
+if(CONFIG.API_URL && /^https:\/\//.test(CONFIG.API_URL)){
+  fetch(CONFIG.API_URL+(CONFIG.API_URL.includes("?")?"&":"?")+"action=timetable",{redirect:"follow"})
+   .then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+   .then(d=>{if(d&&d.teachers&&d.rows){loadData(d,"live");if(!$("#picker").hidden)renderPicker()}})
+   .catch(()=>{$("#srcTxt").textContent+=" · เชื่อมต่อระบบสดไม่ได้ จึงแสดงข้อมูลชุดล่าสุด"});
+}
+
+/* masthead variant */
+(function(){
+  let v="__HEADER_VARIANT__";
+  if(document.querySelector(".hd-switch")){try{v=localStorage.getItem("kjst.hd")||v}catch(e){}}
+  const set=x=>{document.body.dataset.hd=x;document.querySelectorAll(".hd-switch button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===x)));if(document.querySelector(".hd-switch")){try{localStorage.setItem("kjst.hd",x)}catch(e){}}};
+  document.querySelectorAll(".hd-switch button").forEach(b=>b.addEventListener("click",()=>set(b.dataset.v)));
+  set(/^[abc]$/.test(v)?v:"a");
+})();
+</script>
