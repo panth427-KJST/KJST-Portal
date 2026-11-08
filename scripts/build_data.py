@@ -1,42 +1,37 @@
-import json,sys
+"""Build data/timetable.json from a text export of the "KJST Substitute Teaching" database
+(sheets: Timetable, Teachers, Duty, Items, Requests, Settings).
+Leave reasons, request types and attachments are never copied (PDPA)."""
+import sys,csv,io,json,datetime
 src=sys.argv[1]
-rows=json.load(open(src))['values'][1:]
-days={'จันทร์':1,'อังคาร':2,'พุธ':3,'พฤหัสบดี':4,'ศุกร์':5}
-sched=[[r[0].strip(),days[r[1]],int(r[2]),r[3].strip(),r[4].strip() if len(r)>4 else ''] for r in rows if len(r)>=4 and r[1] in days]
-teachers=sorted({s[0] for s in sched})
-def full(n):
-    m=[t for t in teachers if n in t]
-    if len(m)!=1: print('WARN',n,m); return n
-    return m[0]
-S='ให้นักเรียนทำกิจกรรมตามใบงานของคุณครูประจำวิชา'
-raw=[
-('2026-11-02','ปพาวดี ขาวชำนาญ',4,'กลศาสตร์ของไหลและฟิสิกส์แผนใหม่','ม.6/1','ศิริกานต์ สุขศรีเมือง',S),
-('2026-11-02','ปพาวดี ขาวชำนาญ',8,'กลศาสตร์ของไหลและฟิสิกส์แผนใหม่','ม.6/2','ซามีลา สะแลแม',S),
-('2026-11-02','ปพาวดี ขาวชำนาญ',9,'กลศาสตร์ของไหลและฟิสิกส์แผนใหม่','ม.6/2','ซามีลา สะแลแม',S),
-('2026-11-02','กิตติพงค์ นุ่มนวล',7,'สุขศึกษาและพลศึกษา2','ม.1/3','ศุภวัฒน์ แย้มจรัส',S),
-('2026-11-02','กิตติพงค์ นุ่มนวล',8,'สุขศึกษาและพลศึกษา2','ม.1/2','ศุภวัฒน์ แย้มจรัส',S),
-('2026-11-02','อุทัยวรรณ ไชยสาร',1,'ภาษาอังกฤษ6','ม.3/5','ศิริกานต์ สุขศรีเมือง',S),
-('2026-11-02','อุทัยวรรณ ไชยสาร',7,'ภาษาอังกฤษ6','ม.3/3','บัณฑิตา แซ่ลิ้ม',S),
-('2026-11-02','อุทัยวรรณ ไชยสาร',8,'ภาษาอังกฤษ6','ม.3/4','คเชนทร์ สายเส็น',S),
-('2026-11-03','กิตติพงค์ นุ่มนวล',3,'สุขศึกษาและพลศึกษา4','ม.2/5','ยุพราช ครุฑทิพย์',S),
-('2026-11-03','กิตติพงค์ นุ่มนวล',4,'สุขศึกษาและพลศึกษา4','ม.2/4','เวียงศักดิ์ มาเอียด',S),
-('2026-11-03','อุทัยวรรณ ไชยสาร',1,'ภาษาอังกฤษ6','ม.3/5','สุพรรษา ชัยสุริยงค์',S),
-('2026-11-03','อุทัยวรรณ ไชยสาร',3,'ภาษาอังกฤษ6','ม.3/4','ปรางจิตร เกิดวัน',S),
-('2026-11-03','อุทัยวรรณ ไชยสาร',6,'ภาษาอังกฤษ4','ม.2/6','ปนัดดา ปานสกุล',S),
-('2026-11-03','อุทัยวรรณ ไชยสาร',7,'ภาษาอังกฤษ6','ม.3/6','อัญชุลี ทองสาลี',S),
-('2026-11-03','คเชนทร์ สายเส็น',1,'ภาษาอังกฤษ4','ม.2/2','ศิริกานต์ สุขศรีเมือง','ให้สอนแทน'),
-('2026-11-03','คเชนทร์ สายเส็น',3,'ภาษาอังกฤษ6','ม.3/7','บัณฑิตา แซ่ลิ้ม',S),
-('2026-11-03','คเชนทร์ สายเส็น',8,'ภาษาอังกฤษ4','ม.2/1','ธีรดา ไชยบรรดิษฐ',S),
-('2026-11-03','คเชนทร์ สายเส็น',9,'ภาษาอังกฤษ6','ม.3/2','บัณฑิตา แซ่ลิ้ม',S),
-('2026-11-04','อุทัยวรรณ ไชยสาร',1,'ภาษาอังกฤษ6','ม.3/5','ศิริกานต์ สุขศรีเมือง',S),
-('2026-11-04','อุทัยวรรณ ไชยสาร',6,'ภาษาอังกฤษ6','ม.3/6','คเชนทร์ สายเส็น',S),
-('2026-11-04','อุทัยวรรณ ไชยสาร',7,'ภาษาอังกฤษ4','ม.2/3','ปนัดดา ปานสกุล',S),
-('2026-11-05','อุทัยวรรณ ไชยสาร',1,'ภาษาอังกฤษ6','ม.3/6','สุกันยา ออร์เฟอร์','ให้สอนแทน'),
-('2026-11-05','อุทัยวรรณ ไชยสาร',2,'ภาษาอังกฤษ4','ม.2/6','อัญชุลี ทองสาลี','ให้สอนแทน'),
-('2026-11-05','อุทัยวรรณ ไชยสาร',3,'ภาษาอังกฤษ4','ม.2/3','ธีรดา ไชยบรรดิษฐ','ให้สอนแทน'),
-('2026-11-05','อุทัยวรรณ ไชยสาร',9,'ภาษาอังกฤษ6','ม.3/3','อารีรัตน์ คล้ายอุดม','ให้สอนในรายวิชาของตนเอง'),
-]
-subs=[{'d':d,'p':p,'a':full(a),'s':s,'r':r,'by':full(b),'n':n} for d,a,p,s,r,b,n in raw]
-out={'updated':'2026-11-07T15:40:00+07:00','source':'snapshot','schedule':sched,'subs':subs}
+t=open(src,encoding='utf-8').read()
+P={}
+for blk in t.split('## Sheet name: ')[1:]:
+    n,_,b=blk.partition('\n'); P[n.strip()]=list(csv.reader(io.StringIO(b.strip('\n'))))
+def recs(name):
+    rows=P[name]; h=rows[0]; return [dict(zip(h,r)) for r in rows[1:] if any(r)]
+S={r['key']:r['value'] for r in recs('Settings')}
+meta=json.loads(S.get('TT_META','{}'))
+dept={r['teacher'].strip():r['dept'].strip() for r in recs('Teachers') if r['teacher'].strip()}
+tt=[r for r in recs('Timetable') if r['teacher'].strip()]
+teachers=sorted(set(dept)|{r['teacher'].strip() for r in tt})
+ix={n:i for i,n in enumerate(teachers)}
+rows=[[ix[r['teacher'].strip()],int(r['day'])+1,int(r['period']),r['code'],r['subject'],r['class']] for r in tt]
+duty=[[ix[r['teacher'].strip()],int(r['day'])+1,int(r['period']),r['label']] for r in recs('Duty') if r['teacher'].strip() in ix]
+req={r['id']:r for r in recs('Requests')}
+items=[]
+for r in recs('Items'):
+    q=req.get(r['request_id'],{})
+    if q.get('status') in ('cancelled','canceled','deleted','rejected') or 'ยกเลิก' in r.get('request_status',''): continue
+    items.append({k:v for k,v in {
+      'd':r['date'],'p':int(r['period']),'a':r['teacher'],'code':r['code'],'s':r['subject'],'c':r['class'],
+      'm':r['method'],'ml':r['method_label'],'by':r['sub_teacher'],'sw':r['swap_teacher'],
+      'sd':r['swap_date'],'sp':int(r['swap_period']) if r['swap_period'] else None,'ss':r['swap_subject'],
+      'st':r['request_status'],'ack':r['ack']}.items() if v not in ('',None)})
+items.sort(key=lambda x:(x['d'],x['p']))
+out={'updated':datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=7))).isoformat(timespec='minutes'),
+ 'source':'snapshot',
+ 'term':{'name':S.get('TERM_NAME',''),'start':S.get('TERM_START',''),'end':S.get('TERM_END',''),'holidays':[x for x in S.get('HOLIDAYS','').split(',') if x]},
+ 'times':meta.get('times',[]),'noCover':meta.get('noCover',[]),'activity':meta.get('activity',[]),
+ 'teachers':teachers,'groups':{n:dept.get(n,'อื่นๆ') for n in teachers},'rows':rows,'duty':duty,'items':items}
 json.dump(out,open('data/timetable.json','w'),ensure_ascii=False,separators=(',',':'))
-print(len(sched),len(teachers),len(subs))
+print(len(teachers),len(rows),len(duty),len(items),out['term'])

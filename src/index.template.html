@@ -261,7 +261,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr);gap:44px;padding-block:34p
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid var(--line)}
 .grid-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
-table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:980px;table-layout:fixed}
+table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:1080px;table-layout:fixed}
 .tt th,.tt td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:top}
 .tt tr:last-child td,.tt tr:last-child th{border-bottom:0}
 .tt th:last-child,.tt td:last-child{border-right:0}
@@ -283,6 +283,19 @@ table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:980px;ta
 .away .flag{background:var(--urgent);color:#fff}
 .cover .flag{background:var(--ok);color:#fff}
 .flag-by{font-size:.72rem;color:var(--ink)}
+.slot.away.soft{background:var(--surface-2);outline:1px dashed var(--line)}
+.slot.away.soft .flag{background:var(--muted)}
+.slot.is-pend{outline-style:dashed}
+.pend{font-size:.66rem;color:var(--muted)}
+.slot.duty{background:transparent;outline:1px dashed color-mix(in srgb,var(--navy) 35%,transparent)}
+.slot.duty .s{font-weight:500;color:var(--navy)}
+.tt th.hr,.tt td.hr{width:78px}
+.tt thead th{font-variant-numeric:tabular-nums}
+.st{font-family:var(--f-display);font-size:.74rem;font-weight:600;border-radius:99px;padding:1px 8px;white-space:nowrap}
+.st.ok{background:var(--ok-soft);color:var(--ok)}
+.st.wait{background:var(--gold-soft);color:#92400E}
+:root[data-theme="dark"] .st.wait{color:#FCD34D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .st.wait{color:#FCD34D}}
 td.off{background:repeating-linear-gradient(45deg,transparent 0 6px,var(--surface-2) 6px 7px)}
 .holrow td{text-align:center;vertical-align:middle;color:var(--muted);font-family:var(--f-display)}
 .tt-empty{padding:34px 18px;text-align:center;color:var(--muted)}
@@ -298,11 +311,11 @@ td.off{background:repeating-linear-gradient(45deg,transparent 0 6px,var(--surfac
 .dcard h4{margin:0;font-family:var(--f-display);font-size:.95rem;padding:10px 14px;background:var(--surface-2);display:flex;justify-content:space-between}
 .dcard.is-today h4{background:var(--gold-soft)}
 .dcard ul{list-style:none;margin:0;padding:8px;display:grid;gap:6px}
-.dcard li{display:grid;grid-template-columns:52px 1fr;gap:8px;align-items:stretch}
+.dcard li{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:stretch}
 .dcard .p{font-family:var(--f-display);font-size:.8rem;color:var(--muted);padding-top:6px}
 .subs-wrap{margin-top:22px}
 .subs-wrap h3{font-size:1.05rem;margin-bottom:10px}
-table.subs{width:100%;border-collapse:collapse;min-width:640px;font-size:.9rem}
+table.subs{width:100%;border-collapse:collapse;min-width:760px;font-size:.9rem}
 .subs th{text-align:left;font-family:var(--f-display);font-weight:500;color:var(--muted);font-size:.8rem;padding:9px 12px;background:var(--surface-2)}
 .subs td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
 .subs td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -409,7 +422,7 @@ __SWITCHER__
 
   <section id="timetable" aria-labelledby="h-tt">
     <div class="sec-head">
-      <div><h2 id="h-tt">ตารางสอนประจำสัปดาห์</h2><p>ตารางสอนจากระบบจัดสอนแทน พร้อมคาบที่มีการสอนแทนในสัปดาห์ที่เลือก</p></div>
+      <div><h2 id="h-tt">ตารางสอนประจำสัปดาห์</h2><p>ตารางสอนปกติและการจัดสอนแทนจากฐานข้อมูลระบบจัดสอนแทน (KJST Substitute Teaching)</p></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <a class="btn" href="https://panth427-kjst.github.io/Time-Table/Dashboard-2-2569.html" target="_blank" rel="noopener">ตารางทั้งโรงเรียน <svg width="16" height="16"><use href="#i-ext"/></svg></a>
         <a class="btn primary" href="https://script.google.com/macros/s/AKfycbwLkY4-qSN5dshALjUTeu88VFKT1vyqnSb6U9k5izfsmHwxe6v270mGOsTNg8ijRZk6/exec" target="_blank" rel="noopener">บันทึกการสอนแทน <svg width="16" height="16"><use href="#i-arrow"/></svg></a>
@@ -448,14 +461,15 @@ __SWITCHER__
     <div class="legend">
       <span><i class="sw" style="background:var(--cell-own)"></i>คาบสอนปกติ</span>
       <span><i class="sw" style="background:var(--cell-meet)"></i>ประชุม / กิจกรรม</span>
-      <span><i class="sw" style="background:var(--urgent-soft);border-color:var(--urgent)"></i>มีครูสอนแทนในคาบนี้</span>
-      <span><i class="sw" style="background:var(--ok-soft);border-color:var(--ok)"></i>ได้รับมอบหมายสอนแทน</span>
+      <span><i class="sw" style="background:var(--urgent-soft);border-color:var(--urgent)"></i>มีผู้สอนแทน / ย้ายคาบออก</span>
+      <span><i class="sw" style="background:var(--ok-soft);border-color:var(--ok)"></i>สอนแทน / คาบที่สลับหรือย้ายมา</span>
+      <span><i class="sw" style="border-style:dashed"></i>เวรประจำวัน · กรอบเส้นประ = รอรับทราบ/เห็นชอบ</span>
     </div>
     <div class="grid-wrap" id="gridWrap"></div>
     <div class="daylist" id="dayList"></div>
 
     <div class="subs-wrap">
-      <h3 id="subsTitle">การสอนแทนทั้งโรงเรียนในสัปดาห์นี้</h3>
+      <h3 id="subsTitle">การจัดสอนแทนทั้งโรงเรียนในสัปดาห์นี้</h3>
       <div class="grid-wrap" style="display:block" id="subsWrap"></div>
     </div>
     <div class="src"><i class="dot" id="srcDot"></i><span id="srcTxt">–</span></div>
@@ -592,7 +606,7 @@ const TH_D = ["อาทิตย์","จันทร์","อังคาร",
 const thShort = d=>`${d.getDate()} ${TH_M[d.getMonth()]}`;
 const thYear = d=>d.getFullYear()+543;
 const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const shortName = n=>n.replace(/^(นางสาว|นาง|นาย|ว่าที่ ร\.ต\.|ส\.อ\.|Mr\.|Mrs\.|Ms\.|MR\.)\s*/,"");
+const shortName = n=>String(n||"").replace(/^(นางสาว|นาง|นาย|ว่าที่ร้อยตรี|ว่าที่ ร\.ต\.|สิบเอก|ส\.อ\.|Mr\.|Mrs\.|Ms\.|MR\.)\s*/,"");
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
 function schoolDays(){
@@ -664,30 +678,62 @@ function applySearch(){
   syncToggleAll();
 }
 
-/* ===== timetable ===== */
-let showAll=false, CUR="", GROUPOF={}, pkGroup="ทั้งหมด", DATA=null, TEACHERS=[], BY=new Map(), weekMon=null;
-const MEET=/^(ประชุม|PLC|กิจกรรมชุมนุม|ชุมนุม|HR|Homeroom|ลูกเสือ|แนะแนว)/i;
+/* ===== timetable (ฐานข้อมูล KJST Substitute Teaching) ===== */
+let showAll=false, CUR="", GROUPOF={}, pkGroup="ทั้งหมด", DATA=null, TEACHERS=[], BY=new Map(), DUTY=new Map(), weekMon=null;
+const NONTEACH=/^(HR|MEET|PLC|ประชุม|ชุมนุม|ลูกเสือ|กิจกรรม)/i;
+const isMeet=r=>NONTEACH.test(r[3]||"")||NONTEACH.test(r[4]||"");
 function loadData(d,src){
-  DATA=d; TEACHERS=d.teachers; BY=new Map();
+  DATA=d; TEACHERS=d.teachers; BY=new Map(); DUTY=new Map();
   d.rows.forEach(r=>{const t=TEACHERS[r[0]];if(!BY.has(t))BY.set(t,[]);BY.get(t).push(r)});
+  (d.duty||[]).forEach(r=>{const t=TEACHERS[r[0]];if(!DUTY.has(t))DUTY.set(t,[]);DUTY.get(t).push(r)});
   GROUPOF=d.groups||{};
   const up=new Date(d.updated);
   $("#srcDot").className="dot"+(src==="live"?" live":"");
-  $("#srcTxt").textContent=(src==="live"?"เชื่อมต่อระบบจัดสอนแทนแล้ว · ":"ข้อมูลชุดล่าสุดจากระบบจัดสอนแทน · ")+`อัปเดต ${up.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"})} · ครู ${TEACHERS.length} คน`;
+  $("#srcTxt").textContent=(src==="live"?"เชื่อมต่อฐานข้อมูลระบบจัดสอนแทนแล้ว · ":"ข้อมูลจากฐานข้อมูลระบบจัดสอนแทน (ชุดล่าสุด) · ")+`อัปเดต ${up.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"})} · ครู ${TEACHERS.length} คน`;
+  if(!$("#picker").hidden)renderPicker();
   renderTT();
 }
 function weekDates(){return [0,1,2,3,4].map(i=>addDays(weekMon,i))}
-function subsInWeek(){
+const dowOf=isoStr=>{const g=parseISO(isoStr).getDay();return g===0?7:g};
+const slotOf=(t,dow,p)=>(BY.get(t)||[]).find(r=>r[1]===dow&&r[2]===p);
+const fmtD=x=>{const d=parseISO(x);return `${TH_D[d.getDay()].replace("พฤหัสบดี","พฤหัส")} ${thShort(d)}`};
+function itemsInWeek(){
   const a=iso(weekMon),b=iso(addDays(weekMon,4));
-  return DATA.subs.filter(s=>s.d>=a&&s.d<=b).sort((x,y)=>x.d.localeCompare(y.d)||x.p-y.p);
+  return DATA.items.filter(i=>(i.d>=a&&i.d<=b)||(i.sd&&i.sd>=a&&i.sd<=b));
 }
-function cellFor(t,dow,p,dateIso,subs){
-  const own=(BY.get(t)||[]).find(r=>r[1]===dow&&r[2]===p);
-  const away=subs.find(s=>s.a===t&&s.d===dateIso&&s.p===p);
-  const cover=subs.find(s=>s.by===t&&s.d===dateIso&&s.p===p);
-  if(cover) return `<div class="slot cover"><span class="s">${esc(cover.s)}</span><span class="r">${esc(cover.r)}</span><span class="flag-by">แทน ครู${esc(shortName(cover.a))}</span><span class="flag">สอนแทน</span></div>`;
-  if(away) return `<div class="slot away"><span class="s">${esc(away.s)}</span><span class="r">${esc(away.r)}</span><span class="flag-by">ครู${esc(shortName(away.by))} สอนแทน</span><span class="flag">มีผู้สอนแทน</span></div>`;
-  if(own){const m=MEET.test(own[3]);return `<div class="slot ${m?"meet":"own"}"><span class="s">${esc(own[3])}</span><span class="r">${esc(own[4])}</span></div>`}
+/* แปลงรายการจัดสอนแทนเป็นเหตุการณ์ของครูแต่ละคนในแต่ละคาบ */
+function weekEvents(){
+  const ev=[];const add=(t,d,p,kind,o)=>{if(t)ev.push(Object.assign({t,d,p,kind},o))};
+  itemsInWeek().forEach(i=>{
+    const pend=i.st&&i.st!=="สมบูรณ์";const base={s:i.s,c:i.c,st:i.st,pend};
+    if(i.m==="sub"){add(i.a,i.d,i.p,"away",{...base,lab:`ครู${shortName(i.by||"")} สอนแทน`});add(i.by,i.d,i.p,"cover",{...base,lab:`สอนแทน ครู${shortName(i.a)}`});}
+    else if(i.m==="swapF"){add(i.a,i.d,i.p,"away",{...base,lab:`ย้ายไป ${fmtD(i.sd)} คาบ ${i.sp}`,flag:"ย้ายคาบ"});add(i.a,i.sd,i.sp,"cover",{...base,lab:`ย้ายมาจาก ${fmtD(i.d)} คาบ ${i.p}`,flag:"คาบที่ย้ายมา"});}
+    else if(i.m==="swapT"){
+      const other=slotOf(i.sw,dowOf(i.sd),i.sp);const oc=other?other[5]:"";
+      add(i.a,i.d,i.p,"away",{...base,lab:`สลับ: ครู${shortName(i.sw)} สอน`,flag:"สลับคาบ"});
+      add(i.sw,i.d,i.p,"cover",{...base,lab:`สลับกับ ครู${shortName(i.a)}`,flag:"สลับคาบ"});
+      add(i.sw,i.sd,i.sp,"away",{s:i.ss||(other&&other[4])||"",c:oc,st:i.st,pend,lab:`สลับ: ครู${shortName(i.a)} สอน`,flag:"สลับคาบ"});
+      add(i.a,i.sd,i.sp,"cover",{s:i.ss||(other&&other[4])||"",c:oc,st:i.st,pend,lab:`สลับกับ ครู${shortName(i.sw)}`,flag:"สลับคาบ"});
+    }
+    else add(i.a,i.d,i.p,"away",{...base,lab:i.ml||"ไม่ต้องจัด",flag:"ไม่ต้องจัด",soft:true});
+  });
+  return ev;
+}
+function slotHTML(kind,o){
+  const pend=o.pend?`<span class="pend">${esc(o.st)}</span>`:"";
+  if(kind==="cover") return `<div class="slot cover${o.pend?" is-pend":""}"><span class="s">${esc(o.s)}</span><span class="r">${esc(o.c)}</span><span class="flag-by">${esc(o.lab)}</span><span class="flag">${esc(o.flag||"สอนแทน")}</span>${pend}</div>`;
+  if(kind==="away") return `<div class="slot away${o.soft?" soft":""}${o.pend?" is-pend":""}"><span class="s">${esc(o.s)}</span><span class="r">${esc(o.c)}</span><span class="flag-by">${esc(o.lab)}</span><span class="flag">${esc(o.flag||"มีผู้สอนแทน")}</span>${pend}</div>`;
+  return "";
+}
+function cellFor(t,dow,p,dateIso,ev){
+  const mine=ev.filter(e=>e.t===t&&e.d===dateIso&&e.p===p);
+  const cov=mine.find(e=>e.kind==="cover"), aw=mine.find(e=>e.kind==="away");
+  if(cov) return slotHTML("cover",cov);
+  if(aw) return slotHTML("away",aw);
+  const own=slotOf(t,dow,p);
+  if(own) return `<div class="slot ${isMeet(own)?"meet":"own"}"><span class="s">${esc(own[3]==="HR"?"โฮมรูม":own[4])}</span><span class="r">${esc(own[5])}${own[3]&&!/^(HR|MEET|PLC)$/i.test(own[3])?" · "+esc(own[3]):""}</span></div>`;
+  const du=(DUTY.get(t)||[]).find(r=>r[1]===dow&&r[2]===p);
+  if(du) return `<div class="slot duty"><span class="s">${esc(du[3].replace(/\s*\(.*\)$/,""))}</span><span class="r">เวรประจำวัน</span></div>`;
   return "";
 }
 /* ---- teacher selection (no login: remembered per device) ---- */
@@ -750,46 +796,47 @@ function renderTT(){
   const t=CUR;
   const valid=BY.has(t);
   renderWho();
-  const dates=weekDates();const subs=subsInWeek();
+  const dates=weekDates();const ev=weekEvents();const items=itemsInWeek().filter(i=>i.d>=iso(dates[0])&&i.d<=iso(dates[4]));
   const w=semWeek(weekMon);
   $("#weekLbl").innerHTML=`สัปดาห์ที่ ${w}<small>${thShort(dates[0])} – ${thShort(dates[4])} ${thYear(dates[4])}</small>`;
-  // summary
   const mine=valid?(BY.get(t)||[]):[];
-  const teach=mine.filter(r=>!MEET.test(r[3])).length;
-  const covers=valid?subs.filter(s=>s.by===t).length:0;
-  const aways=valid?subs.filter(s=>s.a===t).length:0;
+  const teach=mine.filter(r=>!isMeet(r)).length;
+  const covers=valid?ev.filter(e=>e.t===t&&e.kind==="cover").length:0;
+  const aways=valid?ev.filter(e=>e.t===t&&e.kind==="away").length:0;
   $("#summary").innerHTML = valid?`
     <div class="stat"><b>${teach}</b><span>คาบสอนต่อสัปดาห์</span></div>
-    <div class="stat"><b>${mine.length-teach}</b><span>คาบประชุม / กิจกรรม</span></div>
-    <div class="stat green"><b>${covers}</b><span>คาบที่ได้รับมอบหมายสอนแทน</span></div>
-    <div class="stat red"><b>${aways}</b><span>คาบที่มีครูสอนแทนให้</span></div>`:"";
+    <div class="stat"><b>${mine.length-teach}</b><span>โฮมรูม / ประชุม / กิจกรรม</span></div>
+    <div class="stat green"><b>${covers}</b><span>คาบสอนแทน / สลับมาสัปดาห์นี้</span></div>
+    <div class="stat red"><b>${aways}</b><span>คาบที่มีผู้สอนแทน / ย้ายออก</span></div>`:"";
   if(!valid){
     const def=prefs.def();
     const msg=`<div class="firstrun"><b>${def?"เลือกครูเพื่อดูตารางสอน":"ยังไม่ได้ตั้งครูประจำเครื่องนี้"}</b><p>หน้านี้ไม่มีการลงชื่อเข้าใช้ เลือกชื่อของท่านครั้งเดียว แล้วติ๊ก “จำเป็นค่าเริ่มต้น” ครั้งต่อไปที่เปิดจากเครื่องนี้จะเห็นตารางสอนของท่านทันที</p><button class="btn primary" type="button" data-open-picker>เลือกชื่อของฉัน</button></div>`;
     $("#gridWrap").innerHTML=msg;$("#dayList").innerHTML=`<div class="dcard">${msg}</div>`;
   } else {
-    const P=[1,2,3,4,5,6,7,8,9];
-    let h=`<table class="tt"><thead><tr><th style="width:96px">วัน</th>${P.map(p=>`<th><b>คาบ ${p}</b></th>`).join("")}</tr></thead><tbody>`;
+    const P=[0,1,2,3,4,5,6,7,8,9];const T=DATA.times||[];
+    let h=`<table class="tt"><thead><tr><th style="width:96px">วัน</th>${P.map(p=>`<th${p===0?' class="hr"':""}><b>${p===0?"HR":"คาบ "+p}</b>${T[p]?esc(T[p].replace(" น.","")):""}</th>`).join("")}</tr></thead><tbody>`;
     let m="";
     dates.forEach((d,i)=>{
       const di=iso(d),hol=HOLMAP[di],dow=i+1,today=di===iso(TODAY);
       const outside=di<SEM.start||di>SEM.end;
       h+=`<tr class="${today?"is-today":""}${hol||outside?" holrow":""}"><th scope="row">${TH_D[d.getDay()]}<small>${thShort(d)}${today?" · วันนี้":""}</small></th>`;
-      if(hol||outside){h+=`<td colspan="9" class="off">${hol?"วันหยุด · "+esc(hol):"นอกภาคเรียน"}</td></tr>`;
+      if(hol||outside){h+=`<td colspan="${P.length}" class="off">${hol?"วันหยุด · "+esc(hol):"นอกภาคเรียน"}</td></tr>`;
         m+=`<div class="dcard"><h4><span>${TH_D[d.getDay()]} ${thShort(d)}</span><span>${hol?esc(hol):"นอกภาคเรียน"}</span></h4></div>`;return;}
-      const cells=P.map(p=>cellFor(t,dow,p,di,subs));
-      h+=cells.map(c=>`<td>${c}</td>`).join("")+"</tr>";
-      const items=cells.map((c,j)=>c?`<li><span class="p">คาบ ${j+1}</span>${c}</li>`:"").join("");
-      m+=`<div class="dcard${today?" is-today":""}"><h4><span>${TH_D[d.getDay()]} ${thShort(d)}</span><span>${today?"วันนี้":""}</span></h4><ul>${items||'<li><span class="p"></span><span style="color:var(--muted);padding:6px 0">ไม่มีคาบสอน</span></li>'}</ul></div>`;
+      const cells=P.map(p=>cellFor(t,dow,p,di,ev));
+      h+=cells.map((c,j)=>`<td${j===0?' class="hr"':""}>${c}</td>`).join("")+"</tr>";
+      const li=cells.map((c,j)=>c?`<li><span class="p">${j===0?"HR":"คาบ "+j}<br><small>${T[j]?esc(T[j].replace(" น.","")):""}</small></span>${c}</li>`:"").join("");
+      m+=`<div class="dcard${today?" is-today":""}"><h4><span>${TH_D[d.getDay()]} ${thShort(d)}</span><span>${today?"วันนี้":""}</span></h4><ul>${li||'<li><span class="p"></span><span style="color:var(--muted);padding:6px 0">ไม่มีคาบสอน</span></li>'}</ul></div>`;
     });
     $("#gridWrap").innerHTML=h+"</tbody></table>";
     $("#dayList").innerHTML=m;
   }
-  // school-wide substitutions (no leave reasons shown)
-  $("#subsTitle").textContent=`การสอนแทนทั้งโรงเรียน สัปดาห์ที่ ${w} (${subs.length} คาบ)`;
-  $("#subsWrap").innerHTML = subs.length?`<table class="subs"><thead><tr><th>วัน</th><th>คาบ</th><th>รายวิชา / ห้อง</th><th>ครูประจำวิชา</th><th>ครูสอนแทน</th><th>หมายเหตุ</th></tr></thead><tbody>${
-    subs.map((s,k)=>{const d=parseISO(s.d);return `<tr class="${valid&&(s.by===t||s.a===t)?"mine":""}" ${k>=8&&!showAll?"hidden":""}><td class="num">${TH_D[d.getDay()].slice(0,3)} ${thShort(d)}</td><td class="num">${s.p}</td><td>${esc(s.s)}<br><span style="color:var(--muted)">${esc(s.r)}</span></td><td>${esc(shortName(s.a))}</td><td><b>${esc(shortName(s.by))}</b></td><td style="color:var(--muted)">${esc(s.n)}</td></tr>`}).join("")
-  }</tbody></table>${subs.length>8?`<div style="padding:10px 12px;border-top:1px solid var(--line)"><button class="btn" id="moreSubs" type="button">${showAll?"แสดงน้อยลง":"แสดงทั้งหมด "+subs.length+" คาบ"}</button></div>`:""}`:`<div class="tt-empty"><b>ยังไม่มีการบันทึกสอนแทนในสัปดาห์นี้</b>เมื่อมีการบันทึกในระบบจัดสอนแทน รายการจะแสดงที่นี่</div>`;
+  // รายการจัดสอนแทนทั้งโรงเรียน (ไม่แสดงสาเหตุ/ประเภทการลา)
+  const who=i=>i.m==="sub"?shortName(i.by||"–"):i.m==="swapT"?`${shortName(i.sw)} (สลับกับ ${fmtD(i.sd)} คาบ ${i.sp})`:i.m==="swapF"?`ย้ายไป ${fmtD(i.sd)} คาบ ${i.sp}`:"–";
+  const rel=i=>valid&&[i.a,i.by,i.sw].includes(t);
+  $("#subsTitle").textContent=`การจัดสอนแทนทั้งโรงเรียน สัปดาห์ที่ ${w} (${items.length} คาบ)`;
+  $("#subsWrap").innerHTML = items.length?`<table class="subs"><thead><tr><th>วัน</th><th>คาบ</th><th>รายวิชา / ห้อง</th><th>ครูประจำวิชา</th><th>วิธีจัด</th><th>ผู้สอนแทน / รายละเอียด</th><th>สถานะ</th></tr></thead><tbody>${
+    items.map((i,k)=>`<tr class="${rel(i)?"mine":""}" ${k>=10&&!showAll?"hidden":""}><td class="num">${esc(fmtD(i.d))}</td><td class="num">${i.p}</td><td>${esc(i.s)}<br><span style="color:var(--muted)">${esc(i.c)}</span></td><td>${esc(shortName(i.a))}</td><td>${esc(i.ml||"")}</td><td><b>${esc(who(i))}</b></td><td><span class="st ${i.st==="สมบูรณ์"?"ok":"wait"}">${esc(i.st||"")}</span></td></tr>`).join("")
+  }</tbody></table>${items.length>10?`<div style="padding:10px 12px;border-top:1px solid var(--line)"><button class="btn" id="moreSubs" type="button">${showAll?"แสดงน้อยลง":"แสดงทั้งหมด "+items.length+" คาบ"}</button></div>`:""}`:`<div class="tt-empty"><b>ยังไม่มีการจัดสอนแทนในสัปดาห์นี้</b>เมื่อมีการบันทึกในระบบจัดสอนแทน รายการจะแสดงที่นี่</div>`;
 }
 function setWeek(d){weekMon=mondayOf(d);showAll=false;renderTT()}
 document.addEventListener("click",e=>{if(e.target.id==="moreSubs"){showAll=!showAll;renderTT()}});
