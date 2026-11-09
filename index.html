@@ -116,6 +116,15 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.3
 [data-hd="c"] .today .v{color:#fff}
 [data-hd="c"] .prog{background:rgba(255,255,255,.15)}
 
+/* in-app browser notice (LINE / Facebook / Instagram ...) */
+.inapp{background:#FEF3C7;color:#78350F;border-bottom:1px solid #F59E0B}
+.inapp .wrap{padding-block:10px;display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap}
+.inapp p{margin:0;flex:1 1 260px;font-size:.92rem;line-height:1.45}
+.inapp b{font-family:var(--f-display)}
+.inapp .btn{background:#1E3A8A;color:#fff}
+.inapp .btn.ghost{background:transparent;color:#78350F;border:1px solid #D97706}
+.inapp code{font-size:.8rem;word-break:break-all;background:rgba(255,255,255,.6);padding:1px 6px;border-radius:5px}
+
 /* preview-only switcher */
 .hd-switch{position:fixed;z-index:20;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px}
 .hd-switch span{font-family:var(--f-display);font-size:.8rem;color:var(--muted);padding:0 8px}
@@ -368,6 +377,13 @@ footer .wrap{padding-block:22px;display:flex;justify-content:space-between;gap:1
   </defs>
 </svg>
 
+<div class="inapp" id="inapp" hidden role="region" aria-label="แนะนำให้เปิดในเบราว์เซอร์">
+  <div class="wrap">
+    <p><b>กำลังเปิดในแอป <span id="inappName">แชต</span></b> · ระบบของโรงเรียนต้องลงชื่อเข้าใช้ด้วย Google ซึ่งใช้งานในแอปไม่ได้ กรุณาเปิดหน้านี้ใน Chrome หรือ Safari</p>
+    <a class="btn" id="inappOpen" href="#" rel="noopener">เปิดในเบราว์เซอร์</a>
+    <button class="btn ghost" id="inappCopy" type="button">คัดลอกลิงก์</button>
+  </div>
+</div>
 <script>document.body.dataset.hd="a"</script>
 <header class="hd">
   <div class="hd-util"><div class="wrap"><span><b>วันนี้</b> <span class="js-today">–</span></span><span><b>ภาคเรียนที่ 2/2569</b> <span class="js-week">–</span></span></div></div>
@@ -869,6 +885,43 @@ if(CONFIG.API_URL && /^https:\/\//.test(CONFIG.API_URL)){
    .then(d=>{if(d&&d.teachers&&d.rows){loadData(d,"live");if(!$("#picker").hidden)renderPicker()}})
    .catch(()=>{$("#srcTxt").textContent+=" · เชื่อมต่อระบบสดไม่ได้ จึงแสดงข้อมูลชุดล่าสุด"});
 }
+
+/* ===== in-app browser: force external browser =====
+   LINE: ต่อท้าย ?openExternalBrowser=1 แล้ว LINE จะเปิดด้วยเบราว์เซอร์ภายนอกเอง
+   Android (Facebook/Messenger/Instagram/TikTok): ใช้ intent:// เปิด Chrome
+   iOS แอปอื่น: ลอง x-safari-https:// และมีปุ่มคัดลอกลิงก์สำรอง */
+(function(){
+  const ua=navigator.userAgent||"";
+  const apps=[[/Line\//i,"LINE"],[/FBAN|FBAV|FB_IAB|FBIOS/i,"Facebook"],[/Messenger/i,"Messenger"],[/Instagram/i,"Instagram"],[/musical_ly|TikTok|BytedanceWebview/i,"TikTok"],[/MicroMessenger/i,"WeChat"],[/Twitter/i,"X"],[/; wv\)/i,"แอป"]];
+  const hit=apps.find(a=>a[0].test(ua));
+  if(!hit) return;
+  const isLine=hit[1]==="LINE", isAndroid=/Android/i.test(ua), isIOS=/iPhone|iPad|iPod/i.test(ua);
+  const withParam=u=>{try{const x=new URL(u,location.href);x.searchParams.set("openExternalBrowser","1");return x.href}catch(e){return u}};
+  const external=u=>{
+    if(isLine) return withParam(u);
+    if(isAndroid){const x=new URL(u,location.href);return `intent://${x.host}${x.pathname}${x.search}${x.hash}#Intent;scheme=${x.protocol.replace(":","")};package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(x.href)};end`}
+    if(isIOS) return u.replace(/^https:\/\//,"x-safari-https://");
+    return u;
+  };
+  // LINE: เปิดหน้านี้ใหม่ในเบราว์เซอร์ภายนอกทันที
+  if(isLine && !/[?&]openExternalBrowser=1/.test(location.search)){ location.replace(withParam(location.href)); }
+  const bar=document.getElementById("inapp");
+  if(bar){
+    bar.hidden=false;
+    document.getElementById("inappName").textContent=hit[1];
+    document.getElementById("inappOpen").href=external(location.href);
+    document.getElementById("inappCopy").addEventListener("click",e=>{
+      const url=location.href.split("?")[0];
+      navigator.clipboard&&navigator.clipboard.writeText(url).then(()=>{e.target.textContent="คัดลอกแล้ว"},()=>{e.target.outerHTML=`<code>${url}</code>`});
+      if(!navigator.clipboard)e.target.outerHTML=`<code>${url}</code>`;
+    });
+  }
+  // ลิงก์เข้าระบบทุกลิงก์ในหน้า: ส่งออกไปเบราว์เซอร์ภายนอก
+  document.addEventListener("click",e=>{
+    const a=e.target.closest('a[href^="http"]'); if(!a) return;
+    e.preventDefault(); location.href=external(a.href);
+  },true);
+})();
 
 /* masthead variant */
 (function(){
