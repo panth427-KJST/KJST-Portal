@@ -292,6 +292,18 @@ table.tt{border-collapse:separate;border-spacing:0;width:100%;min-width:1080px;t
 .away .flag{background:var(--urgent);color:#fff}
 .cover .flag{background:var(--ok);color:#fff}
 .flag-by{font-size:.72rem;color:var(--ink)}
+.slot.gone{background:repeating-linear-gradient(135deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);outline:1px solid var(--line)}
+.slot.gone .s{color:var(--muted);font-weight:500;text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.slot.gone .flag{background:#64748B;color:#fff;white-space:nowrap}
+td.hr .slot.gone .flag{font-size:0;padding:0 5px}td.hr .slot.gone .flag::after{content:"ไม่อยู่";font-size:.7rem}
+.slot.gone .flag-by{color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ca-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ca-list li{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid #64748B;border-radius:10px;padding:10px 14px}
+.ca-d{font-family:var(--f-display);font-weight:600;min-width:110px}
+.ca-c{display:flex;gap:6px;flex-wrap:wrap}
+.ca-c b{font-family:var(--f-display);font-size:.82rem;font-weight:600;background:var(--surface-2);border-radius:6px;padding:1px 8px}
+.ca-p{color:var(--muted);font-size:.85rem}
+.ca-n{flex:1 1 220px;color:var(--ink);font-size:.9rem}
 .slot.away.soft{background:var(--surface-2);outline:1px dashed var(--line)}
 .slot.away.soft .flag{background:var(--muted)}
 .slot.is-pend{outline-style:dashed}
@@ -479,11 +491,13 @@ __SWITCHER__
       <span><i class="sw" style="background:var(--cell-meet)"></i>ประชุม / กิจกรรม</span>
       <span><i class="sw" style="background:var(--urgent-soft);border-color:var(--urgent)"></i>มีผู้สอนแทน / ย้ายคาบออก</span>
       <span><i class="sw" style="background:var(--ok-soft);border-color:var(--ok)"></i>สอนแทน / คาบที่สลับหรือย้ายมา</span>
+      <span><i class="sw" style="background:repeating-linear-gradient(135deg,var(--surface-2) 0 3px,var(--surface) 3px 6px)"></i>นักเรียนไม่อยู่</span>
       <span><i class="sw" style="border-style:dashed"></i>เวรประจำวัน · กรอบเส้นประ = รอรับทราบ/เห็นชอบ</span>
     </div>
     <div class="grid-wrap" id="gridWrap"></div>
     <div class="daylist" id="dayList"></div>
 
+    <div class="subs-wrap" id="caWrap"></div>
     <div class="subs-wrap">
       <h3 id="subsTitle">การจัดสอนแทนทั้งโรงเรียนในสัปดาห์นี้</h3>
       <div class="grid-wrap" style="display:block" id="subsWrap"></div>
@@ -732,6 +746,9 @@ function weekEvents(){
   });
   return ev;
 }
+function classAwayAt(cls,d,p){
+  return (DATA.classAway||[]).find(a=>a.d===d&&a.cls.includes(cls)&&(!a.ps||!a.ps.length||a.ps.includes(p)));
+}
 function slotHTML(kind,o){
   const pend=o.pend?`<span class="pend">${esc(o.st)}</span>`:"";
   if(kind==="cover") return `<div class="slot cover${o.pend?" is-pend":""}"><span class="s">${esc(o.s)}</span><span class="r">${esc(o.c)}</span><span class="flag-by">${esc(o.lab)}</span><span class="flag">${esc(o.flag||"สอนแทน")}</span>${pend}</div>`;
@@ -744,6 +761,8 @@ function cellFor(t,dow,p,dateIso,ev){
   if(cov) return slotHTML("cover",cov);
   if(aw) return slotHTML("away",aw);
   const own=slotOf(t,dow,p);
+  const ca=own&&classAwayAt(own[5],dateIso,p);
+  if(ca) return `<div class="slot gone" title="${esc(ca.note)}"><span class="s">${esc(own[3]==="HR"?"โฮมรูม":own[4])}</span><span class="r">${esc(own[5])}</span><span class="flag-by">${esc(ca.note)}</span><span class="flag">นักเรียนไม่อยู่</span></div>`;
   if(own) return `<div class="slot ${isMeet(own)?"meet":"own"}"><span class="s">${esc(own[3]==="HR"?"โฮมรูม":own[4])}</span><span class="r">${esc(own[5])}${own[3]&&!/^(HR|MEET|PLC)$/i.test(own[3])?" · "+esc(own[3]):""}</span></div>`;
   const du=(DUTY.get(t)||[]).find(r=>r[1]===dow&&r[2]===p);
   if(du) return `<div class="slot duty"><span class="s">${esc(du[3].replace(/\s*\(.*\)$/,""))}</span><span class="r">เวรประจำวัน</span></div>`;
@@ -816,11 +835,12 @@ function renderTT(){
   const teach=mine.filter(r=>!isMeet(r)).length;
   const covers=valid?ev.filter(e=>e.t===t&&e.kind==="cover").length:0;
   const aways=valid?ev.filter(e=>e.t===t&&e.kind==="away").length:0;
+  const gone=valid?dates.reduce((n,d,i)=>n+mine.filter(r=>r[1]===i+1&&classAwayAt(r[5],iso(d),r[2])&&!ev.some(e=>e.t===t&&e.d===iso(d)&&e.p===r[2])).length,0):0;
   $("#summary").innerHTML = valid?`
     <div class="stat"><b>${teach}</b><span>คาบสอนต่อสัปดาห์</span></div>
     <div class="stat"><b>${mine.length-teach}</b><span>โฮมรูม / ประชุม / กิจกรรม</span></div>
     <div class="stat green"><b>${covers}</b><span>คาบสอนแทน / สลับมาสัปดาห์นี้</span></div>
-    <div class="stat red"><b>${aways}</b><span>คาบที่มีผู้สอนแทน / ย้ายออก</span></div>`:"";
+    <div class="stat red"><b>${aways+gone}</b><span>${gone?`มีผู้สอนแทน/ย้ายออก ${aways} · นักเรียนไม่อยู่ ${gone}`:"คาบที่มีผู้สอนแทน / ย้ายออก"}</span></div>`:"";
   if(!valid){
     const def=prefs.def();
     const msg=`<div class="firstrun"><b>${def?"เลือกครูเพื่อดูตารางสอน":"ยังไม่ได้ตั้งครูประจำเครื่องนี้"}</b><p>หน้านี้ไม่มีการลงชื่อเข้าใช้ เลือกชื่อของท่านครั้งเดียว แล้วติ๊ก “จำเป็นค่าเริ่มต้น” ครั้งต่อไปที่เปิดจากเครื่องนี้จะเห็นตารางสอนของท่านทันที</p><button class="btn primary" type="button" data-open-picker>เลือกชื่อของฉัน</button></div>`;
@@ -846,6 +866,8 @@ function renderTT(){
   // รายการจัดสอนแทนทั้งโรงเรียน (ไม่แสดงสาเหตุ/ประเภทการลา)
   const who=i=>i.m==="sub"?shortName(i.by||"–"):i.m==="swapT"?`${shortName(i.sw)} (สลับกับ ${fmtD(i.sd)} คาบ ${i.sp})`:i.m==="swapF"?`ย้ายไป ${fmtD(i.sd)} คาบ ${i.sp}`:"–";
   const rel=i=>valid&&[i.a,i.by,i.sw].includes(t);
+  const caW=(DATA.classAway||[]).filter(a=>a.d>=iso(dates[0])&&a.d<=iso(dates[4]));
+  $("#caWrap").innerHTML=caW.length?`<h3>ห้องเรียนที่นักเรียนไม่อยู่ สัปดาห์ที่ ${w}</h3><ul class="ca-list">${caW.map(a=>`<li><span class="ca-d">${esc(fmtD(a.d))}</span><span class="ca-c">${a.cls.map(c=>`<b>${esc(c)}</b>`).join("")}</span><span class="ca-p">${a.ps&&a.ps.length?"คาบ "+a.ps.join(", "):"ทั้งวัน"}</span><span class="ca-n">${esc(a.note)}</span></li>`).join("")}</ul>`:"";
   $("#subsTitle").textContent=`การจัดสอนแทนทั้งโรงเรียน สัปดาห์ที่ ${w} (${items.length} คาบ)`;
   $("#subsWrap").innerHTML = items.length?`<table class="subs"><thead><tr><th>วัน</th><th>คาบ</th><th>รายวิชา / ห้อง</th><th>ครูประจำวิชา</th><th>วิธีจัด</th><th>ผู้สอนแทน / รายละเอียด</th><th>สถานะ</th></tr></thead><tbody>${
     items.map((i,k)=>`<tr class="${rel(i)?"mine":""}" ${k>=10&&!showAll?"hidden":""}><td class="num">${esc(fmtD(i.d))}</td><td class="num">${i.p}</td><td>${esc(i.s)}<br><span style="color:var(--muted)">${esc(i.c)}</span></td><td>${esc(shortName(i.a))}</td><td>${esc(i.ml||"")}</td><td><b>${esc(who(i))}</b></td><td><span class="st ${i.st==="สมบูรณ์"?"ok":"wait"}">${esc(i.st||"")}</span></td></tr>`).join("")

@@ -28,10 +28,16 @@ for r in recs('Items'):
       'sd':r['swap_date'],'sp':int(r['swap_period']) if r['swap_period'] else None,'ss':r['swap_subject'],
       'st':r['request_status'],'ack':r['ack']}.items() if v not in ('',None)})
 items.sort(key=lambda x:(x['d'],x['p']))
+class_away=[]
+if 'ClassAway' in P:
+    for r in recs('ClassAway'):
+        if r.get('status','active')!='active' or not r.get('date'): continue
+        class_away.append({'d':r['date'],'cls':[c.strip() for c in r['classes'].split(',') if c.strip()],
+          'ps':[int(x) for x in r.get('periods','').replace(' ','').split(',') if x.isdigit()],'note':r.get('reason','')})
 out={'updated':datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=7))).isoformat(timespec='minutes'),
  'source':'snapshot',
  'term':{'name':S.get('TERM_NAME',''),'start':S.get('TERM_START',''),'end':S.get('TERM_END',''),'holidays':[x for x in S.get('HOLIDAYS','').split(',') if x]},
  'times':meta.get('times',[]),'noCover':meta.get('noCover',[]),'activity':meta.get('activity',[]),
- 'teachers':teachers,'groups':{n:dept.get(n,'อื่นๆ') for n in teachers},'rows':rows,'duty':duty,'items':items}
+ 'teachers':teachers,'groups':{n:dept.get(n,'อื่นๆ') for n in teachers},'rows':rows,'duty':duty,'items':items,'classAway':class_away}
 json.dump(out,open('data/timetable.json','w'),ensure_ascii=False,separators=(',',':'))
 print(len(teachers),len(rows),len(duty),len(items),out['term'])

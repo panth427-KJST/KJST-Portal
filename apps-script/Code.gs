@@ -6,6 +6,7 @@
  *   - Duty      : เวรประจำวัน
  *   - Items     : รายการจัดสอนแทนรายคาบ (sub / swapF / swapT / none)
  *   - Requests  : สถานะคำขอ (ใช้กรองคำขอที่ยกเลิก)
+ *   - ClassAway : ห้องเรียนที่นักเรียนไม่อยู่ (ไปราชการ/ค่าย/กิจกรรม) — date, classes, periods (ว่าง = ทั้งวัน), reason, status
  *   - Settings  : TERM_*, HOLIDAYS, TT_META (เวลาแต่ละคาบ)
  *
  * PDPA: ไม่ส่ง reason, type/type_label, ไฟล์แนบ, history, ผลรับทราบรายบุคคล ออกไป
@@ -59,13 +60,20 @@ function build_() {
   });
   items.sort((x, y) => x.d < y.d ? -1 : x.d > y.d ? 1 : x.p - y.p);
 
+  const classAway = recs('ClassAway').filter(r => r.date && (r.status || 'active') === 'active').map(r => ({
+    d: r.date,
+    cls: String(r.classes || '').split(',').map(x => x.trim()).filter(String),
+    ps: String(r.periods || '').split(',').map(x => x.trim()).filter(x => /^\d+$/.test(x)).map(Number),   // [] = ทั้งวัน
+    note: r.reason || ''
+  }));
+
   const groups = {}; teachers.forEach(n => groups[n] = dept[n] || 'อื่นๆ');
   return {
     updated: new Date().toISOString(), source: 'live',
     term: { name: S.TERM_NAME || '', start: S.TERM_START || '', end: S.TERM_END || '',
             holidays: String(S.HOLIDAYS || '').split(',').map(x => x.trim()).filter(String) },
     times: meta.times || [], noCover: meta.noCover || [], activity: meta.activity || [],
-    teachers: teachers, groups: groups, rows: rows, duty: duty, items: items
+    teachers: teachers, groups: groups, rows: rows, duty: duty, items: items, classAway: classAway
   };
 }
 
@@ -86,6 +94,6 @@ function getCached_(cache) {
 /** ทดสอบใน editor: Run > testBuild แล้วดู Execution log */
 function testBuild() {
   const o = build_();
-  Logger.log('teachers=%s rows=%s duty=%s items=%s', o.teachers.length, o.rows.length, o.duty.length, o.items.length);
+  Logger.log('teachers=%s rows=%s duty=%s items=%s classAway=%s', o.teachers.length, o.rows.length, o.duty.length, o.items.length, o.classAway.length);
   Logger.log(JSON.stringify(o.items.slice(-3)));
 }
